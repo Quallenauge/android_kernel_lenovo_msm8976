@@ -4629,6 +4629,18 @@ unsigned long this_cpu_load(void)
 }
 
 
+unsigned long get_avg_nr_running(unsigned int cpu)
+{
+	struct rq *q;
+
+	if (cpu >= nr_cpu_ids)
+		return 0;
+
+	q = cpu_rq(cpu);
+
+	return q->ave_nr_running;
+}
+
 /*
  * Global load-average calculations
  *
