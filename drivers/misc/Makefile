@@ -71,6 +71,7 @@ obj-$(CONFIG_USB_EXT_TYPE_C_PERICOM)	+= type-c-pericom.o
 obj-$(CONFIG_USB_EXT_TYPE_C_TI)		+= type-c-ti.o
 obj-$(CONFIG_UID_SYS_STATS) += uid_sys_stats.o
 obj-$(CONFIG_UID_CPUTIME) 	+= uid_cputime.o
+obj-$(CONFIG_DROPBOX) += dropbox.o
 obj-y				+= fusb301.o
 # Required flag to configure the core to operate with the Linux kernel
 ccflags-y += -DFSC_PLATFORM_LINUX
