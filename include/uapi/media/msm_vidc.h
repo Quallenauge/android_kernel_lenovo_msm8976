@@ -297,4 +297,10 @@ enum msm_vidc_color_desc_flag {
 	MSM_VIDC_COLOR_DESC_NOT_PRESENT,
 	MSM_VIDC_COLOR_DESC_PRESENT,
 };
+
+enum msm_vidc_pixel_depth {
+	MSM_VIDC_BIT_DEPTH_8,
+	MSM_VIDC_BIT_DEPTH_10,
+	MSM_VIDC_BIT_DEPTH_UNSUPPORTED = 0XFFFFFFFF,
+};
 #endif
