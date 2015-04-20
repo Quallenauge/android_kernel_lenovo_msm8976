@@ -11,6 +11,7 @@
  *
  */
 
+#include <linux/bitops.h>
 #include <linux/slab.h>
 #include <linux/list.h>
 #include <linux/interrupt.h>
@@ -108,7 +109,7 @@ static enum msm_vidc_pixel_depth get_hal_pixel_depth(u32 hfi_bit_depth)
 	case HFI_BITDEPTH_8: return MSM_VIDC_BIT_DEPTH_8;
 	case HFI_BITDEPTH_10: return MSM_VIDC_BIT_DEPTH_10;
 	}
-	dprintk(VIDC_ERR, "Unsupported bit depth\n");
+	dprintk(VIDC_ERR, "Unsupported bit depth: %d\n", hfi_bit_depth);
 	return MSM_VIDC_BIT_DEPTH_UNSUPPORTED;
 }
 
@@ -124,6 +125,7 @@ static void hfi_process_sess_evt_seq_changed(
 	struct hfi_bit_depth *pixel_depth;
 	u8 *data_ptr;
 	int prop_id;
+	u8 luma_bit_depth = 0, chroma_bit_depth = 0;
 
 	if (sizeof(struct hfi_msg_event_notify_packet)
 		> pkt->size) {
@@ -177,17 +179,36 @@ static void hfi_process_sess_evt_seq_changed(
 			case HFI_PROPERTY_PARAM_VDEC_PIXEL_BITDEPTH:
 				data_ptr = data_ptr + sizeof(u32);
 				pixel_depth = (struct hfi_bit_depth *) data_ptr;
+				/*
+				 * Luma and chroma can have different bitdepths.
+				 * Driver will rely only on luma bitdepth for
+				 * determining output bitdepth type.
+				 *
+				 * pixel_depth->bitdepth will include luma
+				 * bitdepth info in bits 0..15 and chroma
+				 * bitdept in bits 16..31.
+				 */
+				luma_bit_depth =
+					pixel_depth->bit_depth & GENMASK(15, 0);
 				event_notify.bit_depth =
-					get_hal_pixel_depth(
-						pixel_depth->bit_depth);
-				dprintk(VIDC_DBG, "bitdepth: %d\n",
-					pixel_depth->bit_depth);
+					get_hal_pixel_depth(luma_bit_depth);
+				dprintk(VIDC_DBG, "luma bitdepth: %d\n",
+					event_notify.bit_depth);
+				chroma_bit_depth =
+					pixel_depth->bit_depth &
+					GENMASK(31, 16);
+				if (get_hal_pixel_depth(chroma_bit_depth) !=
+					event_notify.bit_depth)
+					dprintk(VIDC_WARN,
+						"chroma_bit_depth(%d) != luma_bit_depth(%d)\n",
+						chroma_bit_depth,
+						luma_bit_depth);
 				data_ptr += sizeof(struct hfi_bit_depth);
 				break;
 			default:
 				dprintk(VIDC_ERR,
 						"%s cmd: 0x%x not supported\n",
-							__func__, prop_id);
+					__func__, prop_id);
 				break;
 			}
 			num_properties_changed--;
