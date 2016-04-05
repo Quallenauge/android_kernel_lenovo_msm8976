@@ -124,6 +124,7 @@ static void hfi_process_sess_evt_seq_changed(
 	struct hfi_frame_size *frame_sz;
 	struct hfi_profile_level *profile_level;
 	struct hfi_bit_depth *pixel_depth;
+	struct hfi_pic_struct *pic_struct;
 	u8 *data_ptr;
 	int prop_id;
 	enum msm_vidc_pixel_depth luma_bit_depth, chroma_bit_depth;
@@ -208,6 +209,17 @@ static void hfi_process_sess_evt_seq_changed(
 					event_notify.bit_depth, luma_bit_depth,
 					chroma_bit_depth);
 				data_ptr += sizeof(struct hfi_bit_depth);
+				break;
+			case HFI_PROPERTY_PARAM_VDEC_PIC_STRUCT:
+				data_ptr = data_ptr + sizeof(u32);
+				pic_struct = (struct hfi_pic_struct *) data_ptr;
+				event_notify.pic_struct =
+					pic_struct->progressive_only;
+				dprintk(VIDC_DBG,
+					"Progressive only flag: %d\n",
+						pic_struct->progressive_only);
+				data_ptr +=
+					sizeof(struct hfi_pic_struct);
 				break;
 			default:
 				dprintk(VIDC_ERR,

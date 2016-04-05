@@ -303,6 +303,7 @@ struct msm_vidc_inst {
 	bool dcvs_mode;
 	u32 operating_rate;
 	enum msm_vidc_pixel_depth bit_depth;
+	u32 pic_struct;
 };
 
 extern struct msm_vidc_drv *vidc_driver;

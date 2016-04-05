@@ -1326,6 +1326,7 @@ void *msm_vidc_open(int core_id, int session_type)
 	inst->core = core;
 	inst->map_output_buffer = false;
 	inst->bit_depth = MSM_VIDC_BIT_DEPTH_8;
+	inst->pic_struct = MSM_VIDC_PIC_STRUCT_PROGRESSIVE;
 
 	for (i = SESSION_MSG_INDEX(SESSION_MSG_START);
 		i <= SESSION_MSG_INDEX(SESSION_MSG_END); i++) {
