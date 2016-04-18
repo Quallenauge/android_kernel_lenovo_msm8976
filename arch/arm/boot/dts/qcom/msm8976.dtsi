@@ -236,7 +236,7 @@
 		compatible = "qcom,gcc-gfx-8976";
 		reg = <0x1800000 0x80000>,
 		    <0x00a6004 0x4>;
-		reg-names = "cc_base", "fuse";
+		reg-names = "cc_base", "efuse";
 		vdd_gfx-supply = <&gfx_vreg_corner>;
 		gpu_handle = <&msm_gpu>;
 		qcom,gfxfreq-corner-v0 =
