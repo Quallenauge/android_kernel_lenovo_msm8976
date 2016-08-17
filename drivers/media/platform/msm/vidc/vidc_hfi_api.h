@@ -1227,6 +1227,7 @@ struct msm_vidc_cb_event {
 	ion_phys_addr_t packet_buffer;
 	ion_phys_addr_t extra_data_buffer;
 	u32 pic_struct;
+	u32 colour_space;
 };
 
 /* Data callback structure */
