@@ -160,6 +160,7 @@ static int mdss_smmu_attach_v1(struct mdss_data_type *mdata)
     struct mdss_iommu_map_type *iomap;
     int i, rc = 0;
 
+	mutex_lock(&mdp_iommu_lock);
     for (i = 0; i < MDSS_IOMMU_MAX_DOMAIN; i++) {
 
 	if (!mdss_smmu_is_valid_domain_type(mdata, i))
@@ -187,6 +188,7 @@ static int mdss_smmu_attach_v1(struct mdss_data_type *mdata)
 	}
     }
 end:
+	mutex_unlock(&mdp_iommu_lock);
     return rc;
 }
 
@@ -324,6 +326,8 @@ err:
 }
 
 /*
+	mutex_lock(&mdp_iommu_lock);
+	mutex_unlock(&mdp_iommu_lock);
  * mdss_smmu_v2_detach()
  *
  * Only disables the clks as it is not required to detach the iommu mapped
