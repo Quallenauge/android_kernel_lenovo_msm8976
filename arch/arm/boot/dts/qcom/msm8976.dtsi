@@ -84,7 +84,7 @@
 
 		modem_mem: modem_region@86c00000 {
 			compatible = "removed-dma-pool";
-			no-map;
+			no-map-fixup;
 			reg = <0x0 0x86C00000 0x0 0x05600000>;
 			label = "modem_mem";
 		};
@@ -102,14 +102,14 @@
 			label = "venus_mem";
 			alloc-ranges = <0x0 0x80000000 0x0 0x10000000>;
 			alignment = <0 0x400000>;
-			size = <0 0x0800000>;
+			size = <0 0x800000>;
 		};
 
 		secure_mem: secure_region {
 			compatible = "shared-dma-pool";
 			reusable;
 			alignment = <0 0x400000>;
-			size = <0 0x7000000>;
+			size = <0 0x7C00000>;
 		};
 
 		qseecom_mem: qseecom_region {
