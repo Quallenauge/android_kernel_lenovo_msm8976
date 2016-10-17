@@ -1951,26 +1951,42 @@
 			<360000000 RPM_SMD_REGULATOR_LEVEL_NOM_PLUS>,
 			<400000000 RPM_SMD_REGULATOR_LEVEL_TURBO>;
 
+/*
+		qcom,clock-freq-tbl {
+			qcom,profile-dec {
+					qcom,codec-mask =	<0xffffffff>;
+					qcom,cycles-per-mb = <392>;
+					qcom,low-power-mode-factor = <65536>;
+			   };
+			   qcom,profile-enc {
+					qcom,codec-mask =	<0x55555555>;
+					qcom,cycles-per-mb = <656>;
+					qcom,low-power-mode-factor = <65536>;
+			};
+		};
+*/
+
+
 		qcom,vidc-iommu-domains {
 			qcom,domain-ns {
 				qcom,vidc-domain-phandle = <&venus_domain_ns>;
-				qcom,vidc-partition-buffer-types = <0x7ff>,
+				vidc-buffer-types = <0x7ff>,
 							<0x800>;
 			};
 
 			qcom,domain-sec-bs {
 				qcom,vidc-domain-phandle = <&venus_domain_sec_bitstream>;
-				qcom,vidc-partition-buffer-types = <0x241>;
+				vidc-buffer-types = <0x241>;
 			};
 
 			qcom,domain-sec-px {
 				qcom,vidc-domain-phandle = <&venus_domain_sec_pixel>;
-				qcom,vidc-partition-buffer-types = <0x106>;
+				vidc-buffer-types = <0x106>;
 			};
 
 			qcom,domain-sec-np {
 				qcom,vidc-domain-phandle = <&venus_domain_sec_non_pixel>;
-				qcom,vidc-partition-buffer-types = <0x480>;
+				vidc-buffer-types = <0x480>;
 			};
 		};
 
