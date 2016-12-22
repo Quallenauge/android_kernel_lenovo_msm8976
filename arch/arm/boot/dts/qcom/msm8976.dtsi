@@ -970,6 +970,7 @@
 		qcom,bus-width = <8>;
 		qcom,large-address-bus;
 
+		qcom,devfreq,freq-table = <20000000 200000000>;
 		qcom,cpu-dma-latency-us = <60 340 900>;
 		qcom,cpu-affinity = "affine_cores";
 		qcom,cpu-affinity-mask = <0x0f>;
@@ -1015,6 +1016,7 @@
 		qcom,bus-width = <4>;
 		qcom,large-address-bus;
 
+		qcom,devfreq,freq-table = <20000000 200000000>;
 		qcom,cpu-dma-latency-us = <701>;
 
 		qcom,msm-bus,name = "sdhc2";
@@ -1057,6 +1059,8 @@
 
 		qcom,clk-rates = <400000 20000000 25000000 50000000 100000000
 								200000000>;
+
+		qcom,devfreq,freq-table = <20000000 200000000>;
 		qcom,cpu-dma-latency-us = <60>;
 		qcom,cpu-affinity = "affine_cores";
 		qcom,cpu-affinity-mask = <0x0f>;
