@@ -971,9 +971,6 @@
 		qcom,large-address-bus;
 
 		qcom,devfreq,freq-table = <20000000 200000000>;
-		qcom,cpu-dma-latency-us = <60 340 900>;
-		qcom,cpu-affinity = "affine_cores";
-		qcom,cpu-affinity-mask = <0x0f>;
 
 		qcom,msm-bus,name = "sdhc1";
 		qcom,msm-bus,num-cases = <9>;
@@ -1001,6 +998,13 @@
 
 		qcom,ice-clk-rates = <200000000 100000000>;
 		qcom,scaling-lower-bus-speed-mode = "DDR52";
+
+		qcom,pm-qos-cpu-groups = <0x03 0x0c>;
+		qcom,pm-qos-cmdq-latency-us =	<70	70>, <70 70>;
+		qcom,pm-qos-legacy-latency-us	= <70 70>, <70 70>;
+		qcom,pm-qos-irq-type = "affine_cores";
+		qcom,pm-qos-irq-cpu =	<0>;
+		qcom,pm-qos-irq-latency =	<70	70>;
 
 		status = "disabled";
 	};
