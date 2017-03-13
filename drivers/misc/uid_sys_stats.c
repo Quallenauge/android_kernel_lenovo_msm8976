@@ -26,6 +26,7 @@
 #include <linux/seq_file.h>
 #include <linux/slab.h>
 #include <linux/uaccess.h>
+#include <linux/rtmutex.h>
 
 #define UID_HASH_BITS	10
 DECLARE_HASHTABLE(hash_table, UID_HASH_BITS);
@@ -268,6 +269,7 @@ static void update_io_stats_all_locked(void)
 	struct user_namespace *user_ns = current_user_ns();
 	unsigned long bkt;
 	uid_t uid;
+	BUG_ON(!rt_mutex_is_locked(&uid_lock));
 
 	hash_for_each(hash_table, bkt, uid_entry, hash)
 		memset(&uid_entry->io[UID_STATE_TOTAL_CURR], 0,
