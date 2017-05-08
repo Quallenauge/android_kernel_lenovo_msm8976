@@ -2654,7 +2654,8 @@ static void smbchg_parallel_usb_en_work(struct work_struct *work)
 	return;
 
 recheck:
-	schedule_delayed_work(&chip->parallel_en_work, 0);
+	queue_delayed_work(system_power_efficient_wq,
+	     &chip->parallel_en_work, 0);
 #else
 	bool in_progress;
 	int total_current_ma;
@@ -2698,7 +2699,8 @@ static void smbchg_parallel_usb_check_ok(struct smbchg_chip *chip)
 	pval.intval = PM_TO_PARALLEL_PARALLEL_CHECK;
 	parallel_psy->set_property(parallel_psy, POWER_SUPPLY_PROP_PM_CONTROL_WAKE, &pval);
 	smbchg_stay_awake(chip, PM_PARALLEL_CHECK);
-	schedule_delayed_work(&chip->parallel_en_work, 0);
+	queue_delayed_work(system_power_efficient_wq,
+	     &chip->parallel_en_work, 0);
 }
 
 static int charging_parallel_suspend_vote_cb(struct device *dev, int suspend,
@@ -3602,7 +3604,8 @@ static void smbchg_vfloat_adjust_check(struct smbchg_chip *chip)
 
 	smbchg_stay_awake(chip, PM_REASON_VFLOAT_ADJUST);
 	pr_smb(PR_STATUS, "Starting vfloat adjustments\n");
-	schedule_delayed_work(&chip->vfloat_adjust_work, 0);
+	queue_delayed_work(system_power_efficient_wq,
+	     &chip->vfloat_adjust_work, 0);
 }
 
 #define FV_STS_REG			0xC
@@ -4746,7 +4749,8 @@ stop:
 	return;
 
 reschedule:
-	schedule_delayed_work(&chip->vfloat_adjust_work,
+	queue_delayed_work(system_power_efficient_wq,
+	     &chip->vfloat_adjust_work,
 			msecs_to_jiffies(VFLOAT_RESAMPLE_DELAY_MS));
 	return;
 }
@@ -4949,7 +4953,8 @@ static enum alarmtimer_restart smbchg_get_fg_soc_callback(struct alarm *alarm, k
 	350ms to make sure the soc work can be exec before deep sleep.
 	*/
 	wake_lock_timeout(&chip->get_fg_soc_wake_lock, msecs_to_jiffies(350));
-	schedule_delayed_work(&chip->get_fg_soc_work, msecs_to_jiffies(300));
+	queue_delayed_work(system_power_efficient_wq,
+	     &chip->get_fg_soc_work, msecs_to_jiffies(300));
 	return ALARMTIMER_NORESTART;
 }
 
@@ -6078,7 +6083,8 @@ static void handle_usb_insertion(struct smbchg_chip *chip)
 
 #ifndef DISABLE_CODE_FOR_BQ25892
 if (usb_supply_type == POWER_SUPPLY_TYPE_USB_DCP) {
-	schedule_delayed_work(&chip->hvdcp_det_work,
+	queue_delayed_work(system_power_efficient_wq,
+	     &chip->hvdcp_det_work,
 			      msecs_to_jiffies(HVDCP_NOTIFY_MS));
 	if (chip->parallel.use_parallel_aicl) {
 		INIT_COMPLETION(chip->hvdcp_det_done);
@@ -6426,7 +6432,8 @@ static void smbchg_handle_hvdcp3_disable(struct smbchg_chip *chip)
 		read_usb_type(chip, &usb_type_name, &usb_supply_type);
 		smbchg_change_usb_supply_type(chip, usb_supply_type);
 		if (usb_supply_type == POWER_SUPPLY_TYPE_USB_DCP) {
-			schedule_delayed_work(&chip->hvdcp_det_work,
+			queue_delayed_work(system_power_efficient_wq,
+			     &chip->hvdcp_det_work,
 				msecs_to_jiffies(HVDCP_NOTIFY_MS));
 			if (chip->parallel.use_parallel_aicl) {
 				INIT_COMPLETION(chip->hvdcp_det_done);
