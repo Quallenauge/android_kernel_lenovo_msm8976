@@ -4,6 +4,7 @@ CFLAGS_scm.o :=$(call as-instr,.arch_extension sec,-DREQUIRES_SEC=1)
 
 ccflags-$(CONFIG_MSM_QBT1000) += -Idrivers/misc/
 
+obj-$(CONFIG_MSM_CPU_ACC_CONTROLLER) += idle-v8.o cpu_ops.o
 obj-$(CONFIG_MSM_INRUSH_CURRENT_MITIGATION) += inrush-current-mitigation.o
 obj-$(CONFIG_MSM_GLADIATOR_ERP) += gladiator_erp.o
 obj-$(CONFIG_MSM_GLADIATOR_ERP_V2) += gladiator_erp_v2.o
