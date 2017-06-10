@@ -924,6 +924,14 @@ config QCOM_EARLY_RANDOM
 config QCOM_QDSS_BRIDGE
 	bool "Configure bridge driver for Qualcomm Technologies, Inc. MDM"
 	depends on MSM_MHI
+config MSM_CPU_PWR_CTL
+	bool "Cpu subsystem power control"
+	depends on SMP && (ARM || ARM64)
+	default y
+	help
+	Provides routines to power on cpu rails and l2 cache
+	controller during coldboot.
+
 	help
 	  The driver will help route diag traffic over the QDSS sub-system to
 	  USB on APPS side. The driver acts as a bridge between the PCIE MHI
