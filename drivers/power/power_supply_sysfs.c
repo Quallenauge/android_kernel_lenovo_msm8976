@@ -72,6 +72,11 @@ static ssize_t power_supply_show_property(struct device *dev,
 	static char *scope_text[] = {
 		"Unknown", "System", "Device"
 	};
+#ifdef CONFIG_QPNP_SMBCHARGER_BQ25892
+	static char *standard_adapter_text[] = {
+		"checking", "standard", "non-standard"
+	};
+#endif
 	static const char * const typec_text[] = {
 		"Nothing attached", "Sink attached", "Powered cable w/ sink",
 		"Debug Accessory", "Audio Adapter", "Powered cable w/o sink",
@@ -119,6 +124,10 @@ static ssize_t power_supply_show_property(struct device *dev,
 		return sprintf(buf, "%s\n", type_text[value.intval]);
 	else if (off == POWER_SUPPLY_PROP_SCOPE)
 		return sprintf(buf, "%s\n", scope_text[value.intval]);
+#ifdef CONFIG_QPNP_SMBCHARGER_BQ25892
+	else if (off == POWER_SUPPLY_PROP_STANDARD_ADAPTER)     //mozuyuan add
+		return sprintf(buf, "%s\n", standard_adapter_text[value.intval]);
+#endif
 	else if (off == POWER_SUPPLY_PROP_TYPEC_MODE)
 		return snprintf(buf, PAGE_SIZE,
 					"%s\n", typec_text[value.intval]);
@@ -254,6 +263,15 @@ static struct device_attribute power_supply_attrs[] = {
 	POWER_SUPPLY_ATTR(system_temp_level),
 	POWER_SUPPLY_ATTR(resistance),
 	POWER_SUPPLY_ATTR(resistance_capacitive),
+#ifdef CONFIG_QPNP_SMBCHARGER_BQ25892
+	POWER_SUPPLY_ATTR(vbus_now),             //mzy add 20160428
+	POWER_SUPPLY_ATTR(standard_adapter),     //mzy add 20160428
+	POWER_SUPPLY_ATTR(mtk_handshake),        //mzy add 20160428
+	POWER_SUPPLY_ATTR(current_fit),          //mzy add 20160509
+	POWER_SUPPLY_ATTR(pm_control_wake),      //mzy add 20160510
+	POWER_SUPPLY_ATTR(pm_control_relax),     //mzy add 20160510
+	POWER_SUPPLY_ATTR(iindpm_status),
+#endif
 	POWER_SUPPLY_ATTR(resistance_id),
 	POWER_SUPPLY_ATTR(resistance_now),
 	POWER_SUPPLY_ATTR(flash_current_max),
