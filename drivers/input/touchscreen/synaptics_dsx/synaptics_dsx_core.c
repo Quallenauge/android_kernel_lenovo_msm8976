@@ -31,6 +31,10 @@
 #include <linux/input/mt.h>
 #endif
 
+#ifdef CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE
+#include <linux/input/doubletap2wake.h>
+#endif
+
 #define INPUT_PHYS_NAME "synaptics_dsx/touch_input"
 
 #define VIRTUAL_KEY_MAP_FILE_NAME "virtualkeys." PLATFORM_DRIVER_NAME
@@ -1398,6 +1402,7 @@ static int synaptics_rmi4_irq_enable(struct synaptics_rmi4_data *rmi4_data,
 	int retval = 0;
 	const struct synaptics_dsx_board_data *bdata =
 			rmi4_data->hw_if->board_data;
+	long irq_flags = bdata->irq_flags;
 
 	if (attn_only) {
 		retval = synaptics_rmi4_int_enable(rmi4_data, enable);
@@ -1416,7 +1421,7 @@ static int synaptics_rmi4_irq_enable(struct synaptics_rmi4_data *rmi4_data,
 		synaptics_rmi4_sensor_report(rmi4_data, false);
 
 		retval = request_threaded_irq(rmi4_data->irq, NULL,
-				synaptics_rmi4_irq, bdata->irq_flags,
+				synaptics_rmi4_irq, irq_flags,
 				PLATFORM_DRIVER_NAME, rmi4_data);
 		if (retval < 0) {
 			dev_err(rmi4_data->pdev->dev.parent,
@@ -1924,6 +1929,7 @@ static int synaptics_rmi4_f12_init(struct synaptics_rmi4_data *rmi4_data,
 			rmi4_data->sensor_max_y);
 
 	rmi4_data->f12_wakeup_gesture = query_5.ctrl27_is_present;
+
 	if (rmi4_data->f12_wakeup_gesture) {
 		extra_data->ctrl20_offset = ctrl_20_offset;
 		extra_data->data4_offset = query_8.data0_is_present +
@@ -3585,6 +3591,7 @@ static void synaptics_rmi4_wakeup_gesture(struct synaptics_rmi4_data *rmi4_data,
 
 	return;
 }
+
 /*
 static void synaptics_rmi4_sensor_sleep(struct synaptics_rmi4_data *rmi4_data)
 {
@@ -3765,6 +3772,14 @@ static int synaptics_rmi4_suspend(struct device *dev)
 				rmi4_data->hw_if->board_data;  
 
 		
+#ifdef CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE
+	if (dt2w_switch) {
+		dt2w_scr_suspended = true;
+		enable_irq_wake(rmi4_data->irq);
+		return 0;
+	}
+#endif
+
 	if (rmi4_data->stay_awake)
 		return 0;
 
@@ -3811,9 +3826,17 @@ static int synaptics_rmi4_resume(struct device *dev)
 {
 	struct synaptics_rmi4_exp_fhandler *exp_fhandler;
 	struct synaptics_rmi4_data *rmi4_data = dev_get_drvdata(dev);
-     int retval;
+	int retval;
 	const struct synaptics_dsx_board_data *bdata =
 				rmi4_data->hw_if->board_data;  
+
+#ifdef CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE
+	if (dt2w_switch) {
+		dt2w_scr_suspended = false;
+		disable_irq_wake(rmi4_data->irq);
+		return 0;
+	}
+#endif
 
 	if (rmi4_data->stay_awake)
 		return 0;
