@@ -111,6 +111,13 @@ struct msm_session {
 	rwlock_t stream_rwlock;
 };
 
+struct camera_module_info_t {
+  char sensor_name[10];
+  char module_name[10];
+};
+
+void byd_get_camera_name(const char* name, int position);
+
 void msm_pm_qos_update_request(int val);
 
 int msm_post_event(struct v4l2_event *event, int timeout);
