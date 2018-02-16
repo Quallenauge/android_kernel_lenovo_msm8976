@@ -1075,7 +1075,7 @@ qpnp_pon_config_input(struct qpnp_pon *pon,  struct qpnp_pon_config *cfg)
 		pon->pon_input->name = "qpnp_pon";
 		pon->pon_input->phys = "qpnp_pon/input0";
 #ifdef CONFIG_TOUCHSCREEN_DOUBLETAP2WAKE
-		doubletap2wake_setdev(pon->pon_input);
+		doubletap2wake_set_pwrdev(pon->pon_input);
 #endif
 	}
 
