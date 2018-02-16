@@ -76,6 +76,7 @@ MODULE_LICENSE("GPLv2");
 #define DT2W_PWRKEY_DUR   60
 #define DT2W_FEATHER     150
 #define DT2W_TIME        600
+#define DT2W_VIBR_DUR_MS  75
 
 /* Resources */
 int dt2w_switch = DT2W_DEFAULT;
@@ -89,16 +90,25 @@ bool dt2w_scr_suspended = false;
 static struct notifier_block dt2w_lcd_notif;
 #endif
 #endif
-static struct input_dev * doubletap2wake_pwrdev;
+static struct input_dev *doubletap2wake_pwrdev;
+static struct timed_output_dev *doubletap2wake_vibdev;
 static DEFINE_MUTEX(pwrkeyworklock);
 static struct workqueue_struct *dt2w_input_wq;
 static struct work_struct dt2w_input_work;
 
 /* PowerKey setter */
-void doubletap2wake_setdev(struct input_dev * input_device) {
+void doubletap2wake_set_pwrdev(struct input_dev *input_device) {
 	doubletap2wake_pwrdev = input_device;
-	printk(LOGTAG"set doubletap2wake_pwrdev: %s\n", doubletap2wake_pwrdev->name);
+	pr_info("set doubletap2wake_pwrdev: %s\n", doubletap2wake_pwrdev->name);
 }
+EXPORT_SYMBOL(doubletap2wake_set_pwrdev);
+
+void doubletap2wake_set_vibdev(struct timed_output_dev *tdev)
+{
+	doubletap2wake_vibdev = tdev;
+	pr_info("set doubletap2wake_vibdev: %s\n", tdev->name);
+}
+EXPORT_SYMBOL(doubletap2wake_set_vibdev);
 
 /* Read cmdline for dt2w */
 static int __init read_dt2w_cmdline(char *dt2w)
@@ -141,8 +151,18 @@ static void doubletap2wake_presspwr(struct work_struct * doubletap2wake_presspwr
 static DECLARE_WORK(doubletap2wake_presspwr_work, doubletap2wake_presspwr);
 
 /* PowerKey trigger */
-static void doubletap2wake_pwrtrigger(void) {
-	schedule_work(&doubletap2wake_presspwr_work);
+static void doubletap2wake_pwrtrigger(void)
+{
+	if (doubletap2wake_vibdev)
+		doubletap2wake_vibdev->enable(doubletap2wake_vibdev,
+		                              DT2W_VIBR_DUR_MS);
+	else
+		pr_err(LOGTAG "cannot vibrate, not registered with vibdev");
+
+	if (doubletap2wake_pwrdev)
+		schedule_work(&doubletap2wake_presspwr_work);
+	else
+		pr_err(LOGTAG "cannot inject pwron, not registered with input dev");
 	return;
 }
 

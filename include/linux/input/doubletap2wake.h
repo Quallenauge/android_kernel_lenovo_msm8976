@@ -22,9 +22,13 @@
 #ifndef _LINUX_DOUBLETAP2WAKE_H
 #define _LINUX_DOUBLETAP2WAKE_H
 
+#include <linux/input.h>
+#include <../drivers/staging/android/timed_output.h>
+
 extern int dt2w_switch;
 extern bool dt2w_scr_suspended;
 
-void doubletap2wake_setdev(struct input_dev *);
+void doubletap2wake_set_pwrdev(struct input_dev*);
+void doubletap2wake_set_vibdev(struct timed_output_dev*);
 
 #endif	/* _LINUX_DOUBLETAP2WAKE_H */
