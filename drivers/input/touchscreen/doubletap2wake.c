@@ -78,6 +78,13 @@ MODULE_LICENSE("GPLv2");
 #define DT2W_TIME        600
 #define DT2W_VIBR_DUR_MS  75
 
+/* Values found empirically by tapping on the screen.
+ * Note that the X axis seems to correspond to the short edge
+ * of the screen, and Y to the long edge.
+ */
+#define DT2W_MAX_X      2534
+#define DT2W_MAX_Y      1642
+
 /* Resources */
 int dt2w_switch = DT2W_DEFAULT;
 static cputime64_t tap_time_pre = 0;
@@ -178,6 +185,18 @@ static unsigned int calc_feather(int coord, int prev_coord)
 	return calc_coord;
 }
 
+/* Returns zero if tapping is in a valid area,
+ * or -1 if it should be rejected
+ */
+static int reject_edges(int x, int y)
+{
+	if (x >= DT2W_MAX_X / 10 && x <= DT2W_MAX_X * 9 / 10 &&
+	    y >= DT2W_MAX_Y / 10 && y <= DT2W_MAX_Y * 9 / 10)
+		return 0;
+	else
+		return -1;
+}
+
 /* init a new touch */
 static void new_touch(int x, int y)
 {
@@ -202,6 +221,7 @@ static void detect_doubletap2wake(int x, int y, bool st)
 		} else {
 			if ((calc_feather(x, x_pre) < DT2W_FEATHER) &&
 			    (calc_feather(y, y_pre) < DT2W_FEATHER) &&
+			    (!reject_edges(x, y)) &&
 			    ((ktime_to_ms(ktime_get())-tap_time_pre) < DT2W_TIME)) {
 				pr_info(LOGTAG"ON\n");
 				exec_count = false;
