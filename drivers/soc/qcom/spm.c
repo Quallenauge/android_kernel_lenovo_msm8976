@@ -427,9 +427,8 @@ int msm_spm_drv_set_vdd(struct msm_spm_driver_data *dev, unsigned int vlevel)
 	do {
 		udelay(1);
 		new_level = msm_spm_drv_get_sts_curr_pmic_data(dev);
-		/* FSM is idle */
-		if (((new_level & 0x30000) == 0) &&
-				((new_level & 0xFF) == vlevel))
+		/* FSM is idle and data is sent to PMIC */
+		if (((new_level & 0x30000) == 0) && ((new_level & 0xFF) == vlevel))
 			break;
 	} while (--timeout_us);
 	if (!timeout_us) {

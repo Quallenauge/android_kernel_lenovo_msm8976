@@ -4003,6 +4003,7 @@ int mdss_mdp_display_commit_pp_post_vsync(struct mdss_mdp_ctl *ctl, void *arg,
 	struct mdss_mdp_ctl *sctl = NULL;
 
 	pr_debug("Video mode: enter %s\n", __func__);
+
 	if (!ctl) {
 		pr_err("display function not set\n");
 		return -ENODEV;
@@ -4018,7 +4019,8 @@ int mdss_mdp_display_commit_pp_post_vsync(struct mdss_mdp_ctl *ctl, void *arg,
 
 	mutex_lock(&ctl->flush_lock);
 	ATRACE_BEGIN("postproc_programming");
-	if (ctl->is_video_mode && ctl->mfd && ctl->mfd->dcm_state != DTM_ENTER)
+
+	if (ctl->mfd && ctl->mfd->dcm_state != DTM_ENTER)
 		/* postprocessing setup, including dspp */
 		mdss_mdp_pp_setup_locked(ctl);
 
