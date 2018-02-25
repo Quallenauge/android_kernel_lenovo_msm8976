@@ -113,6 +113,13 @@ struct msm_session {
 	struct mutex close_lock;
 	rwlock_t stream_rwlock;
 };
+ 
+struct camera_module_info_t {
+  char sensor_name[10];
+  char module_name[10];
+};
+
+void byd_get_camera_name(const char* name, int position);
 
 static inline bool msm_is_daemon_present(void)
 {
