@@ -204,7 +204,7 @@ static void cpuquiet_work_func(struct work_struct *work)
 
 	cpumask_andnot(&online, &online, &cpu_online);
 	for_each_cpu(cpu, &online){
-		ret =	device_online(get_cpu_device(cpu));
+		cpu_up(cpu);
 		if ( ret < 0 ){
 			printk("%s:%s:%d cpu=%d device_online() failed ret=%d!\n",__FILE__,__FUNCTION__,__LINE__, cpu, ret);
 		}
@@ -212,7 +212,7 @@ static void cpuquiet_work_func(struct work_struct *work)
 
 	cpumask_and(&offline, &offline, &cpu_online);
 	for_each_cpu(cpu, &offline){
-		ret = device_offline(get_cpu_device(cpu));
+		cpu_down(cpu);
 		if ( ret < 0 ){
 			printk("%s:%s:%d cpu=%d device_offline() failed ret=%d!\n",__FILE__,__FUNCTION__,__LINE__, cpu, ret);
 		}
