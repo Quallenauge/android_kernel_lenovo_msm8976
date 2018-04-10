@@ -18,6 +18,11 @@
 
 #include "base.h"
 
+struct bus_type cpu_subsys = {
+	.name = "cpu",
+	.dev_name = "cpu",
+};
+EXPORT_SYMBOL_GPL(cpu_subsys);
 
 static DEFINE_PER_CPU(struct device *, cpu_sys_devices);
 
@@ -29,34 +34,6 @@ static void change_cpu_under_node(struct cpu *cpu,
 	unregister_cpu_under_node(cpuid, from_nid);
 	register_cpu_under_node(cpuid, to_nid);
 	cpu->node_id = to_nid;
-}
-
-static int cpu_subsys_online(struct device *dev)
-{
-    struct cpu *cpu = container_of(dev, struct cpu, dev);
-    int cpuid = dev->id;
-    int from_nid, to_nid;
-    int ret;
-
-    from_nid = cpu_to_node(cpuid);
-    if (from_nid == NUMA_NO_NODE)
-	return -ENODEV;
-
-    ret = cpu_up(cpuid);
-    /*
-     * When hot adding memory to memoryless node and enabling a cpu
-     * on the node, node number of the cpu may internally change.
-     */
-    to_nid = cpu_to_node(cpuid);
-    if (from_nid != to_nid)
-	change_cpu_under_node(cpu, from_nid, to_nid);
-
-    return ret;
-}
-
-static int cpu_subsys_offline(struct device *dev)
-{
-    return cpu_down(dev->id);
 }
 
 static ssize_t show_online(struct device *dev,
@@ -153,16 +130,6 @@ static inline void register_cpu_control(struct cpu *cpu)
 {
 }
 #endif /* CONFIG_HOTPLUG_CPU */
-
-struct bus_type cpu_subsys = {
-	.name = "cpu",
-	.dev_name = "cpu",
-#ifdef CONFIG_HOTPLUG_CPU
-	.online = cpu_subsys_online,
-	.offline = cpu_subsys_offline,
-#endif
-};
-EXPORT_SYMBOL_GPL(cpu_subsys);
 
 #ifdef CONFIG_KEXEC
 #include <linux/kexec.h>
