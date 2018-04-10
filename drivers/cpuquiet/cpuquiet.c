@@ -151,6 +151,7 @@ int cpuquiet_wake_quiesce_cpu(unsigned int cpunumber, bool sync, bool up)
 static void cpuquiet_work_func(struct work_struct *work)
 {
 	int count = -1;
+	int ret;
 	unsigned int cpu;
 	int nr_cpus;
 	struct cpumask online, offline, cpu_online;
@@ -202,12 +203,20 @@ static void cpuquiet_work_func(struct work_struct *work)
 	}
 
 	cpumask_andnot(&online, &online, &cpu_online);
-	for_each_cpu(cpu, &online)
-		device_online(get_cpu_device(cpu));
+	for_each_cpu(cpu, &online){
+		ret =	device_online(get_cpu_device(cpu));
+		if ( ret < 0 ){
+			printk("%s:%s:%d cpu=%d device_online() failed ret=%d!\n",__FILE__,__FUNCTION__,__LINE__, cpu, ret);
+		}
+	}
 
 	cpumask_and(&offline, &offline, &cpu_online);
-	for_each_cpu(cpu, &offline)
-		device_offline(get_cpu_device(cpu));
+	for_each_cpu(cpu, &offline){
+		ret = device_offline(get_cpu_device(cpu));
+		if ( ret < 0 ){
+			printk("%s:%s:%d cpu=%d device_offline() failed ret=%d!\n",__FILE__,__FUNCTION__,__LINE__, cpu, ret);
+		}
+	}
 
 	wake_up_interruptible(&wait_cpu);
 }
