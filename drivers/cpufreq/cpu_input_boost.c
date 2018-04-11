@@ -28,7 +28,7 @@
  * big CPUs.
  */
 #define LITTLE_CPU_MASK (CPU_MASK(0) | CPU_MASK(1) | CPU_MASK(2) | CPU_MASK(3))
-#define BIG_CPU_MASK (CPU_MASK(4) | CPU_MASK(5))
+#define BIG_CPU_MASK    (CPU_MASK(4) | CPU_MASK(5) | CPU_MASK(6) | CPU_MASK(7))
 
 /* Available bits for boost_policy state */
 #define DRIVER_ENABLED        (1U << 0)
@@ -791,8 +791,8 @@ static void set_default_value(void)
 	struct fb_policy *fb = &b->fb;
 
 	set_boost_bit(b, DRIVER_ENABLED);
-	ib->freq[0] = 806400;
-	ib->freq[1] = 883200;
+	ib->freq[0] = 1305600;
+	ib->freq[1] = 1382400;
 	ib->duration_ms = 40;
 	fb->fb_duration_ms = 1000;
 }
