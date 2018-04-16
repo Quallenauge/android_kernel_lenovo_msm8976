@@ -1497,7 +1497,7 @@ static void __queue_delayed_work(int cpu, struct workqueue_struct *wq,
 	timer->expires = jiffies + delay;
 
 	if (unlikely(cpu != WORK_CPU_UNBOUND))
-	add_timer_on(timer, cpu);
+		add_timer_on(timer, 0);
 	else
 		add_timer(timer);
 }
