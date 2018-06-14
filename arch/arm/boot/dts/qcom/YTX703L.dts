@@ -15,6 +15,7 @@
 
 #include "msm8976-v1.1.dtsi"
 #include "msm8976-mtp.dtsi"
+#include "YTX703.dtsi"
 
 /* This file supports the YTX703L and YTX703X devices */
 / {

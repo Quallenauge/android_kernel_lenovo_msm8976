@@ -11,15 +11,6 @@
  * GNU General Public License for more details.
  */
 
-/dts-v1/;
-
-#include "apq8076-v1.1.dtsi"
-#include "msm8976-mtp.dtsi"
-#include "YTX703.dtsi"
-
-/* This file supports the YTX703F device */
-/ {
-	model = "Qualcomm Technologies, Inc. APQ 8076v1.1 MTP";
-	compatible = "qcom,apq8076-mtp", "qcom,apq8076", "qcom,mtp";
-	qcom,board-id = <8 0>;
+&soc {
 };
+
