@@ -18,29 +18,13 @@
 			linux,reserve-contiguous-region;
 			linux,reserve-region;
 			linux,remove-completely;
-			reg = <0 0x57F00000 0 0x100000>;
+			reg = <0x0 0x30000000 0x0 0x00300000>;
 			label = "pstore_reserve_mem";
 		};
 	};
 };
 
 &soc {
-	/* define pstore memory addresses for certain logs: */
-	ramoops {
-		compatible = "ramoops";
-		android,ramoops-buffer-start = <0x57F00000>;
-		android,ramoops-buffer-size  = <0x100000>;
-		android,ramoops-console-size = <0x40000>;
-		android,ramoops-record-size  = <0x20000>;
-		android,ramoops-ftrace-size  = <0x20000>;
-		android,ramoops-pmsg-size    = <0x20000>;
-		android,ramoops-dump-oops    = <0x1>;
-		linux,contiguous-region = <&pstore_reserve_mem>;
-		android,ramoops-hole {
-			compatible = "qcom,msm-contig-mem";
-			qcom,memblock-reserve = <0x57F00000 0x00100000>;
-		};
-	};
 	/* sound configuration */
 	ext_codec: sound-9335 {
 		qcom,msm-mbhc-hphl-swh = <1>; /* headphone detection */
@@ -61,8 +45,8 @@
 			qcom,pin-func = <1>;
 			label = "charger_int_pin";
 			charger_int_default: charger_int_default {
-				drive-strength = <2>;	/* 2 MA */
-				bias-pull-up;		/* PULL UP*/
+				drive-strength = <2>; /* 2 MA */
+				bias-pull-up; /* PULL UP*/
 			};
 		};
 		charger_psel_pin {
@@ -71,8 +55,8 @@
 			qcom,pin-func = <0>;
 			label = "charger_psel_pin";
 			charger_psel_default:  charger_psel_default {
-				drive-strength = <2>;	/* 2 MA */
-				bias-pull-up;		/* PULL UP*/
+				drive-strength = <2>; /* 2 MA */
+				bias-pull-up; /* PULL UP*/
 			};
 		};
 		/* USB pins: */
@@ -95,11 +79,11 @@
 			};
 		};
 		/* camera pins: */
-		cam_sensor_rear_default { /* STANDBY */
+		cam_sensor_rear_default {  /* STANDBY */
 			qcom,pins = <&gp 35>;
 			qcom,num-grp-pins = <1>;
 		};
-		cam_sensor_rear_sleep { /* STANDBY */
+		cam_sensor_rear_sleep {    /* STANDBY */
 			qcom,pins = <&gp 35>;
 			qcom,num-grp-pins = <1>;
 		};
@@ -107,7 +91,7 @@
 			qcom,pins = <&gp 131>;
 			qcom,num-grp-pins = <1>;
 		};
-		cam_sensor_front_sleep { /* RESET, STANDBY */
+		cam_sensor_front_sleep {   /* RESET, STANDBY */
 			qcom,pins = <&gp 131>;
 			qcom,num-grp-pins = <1>;
 		};
@@ -221,6 +205,8 @@
 		pinctrl-2 = <&ts_release>;
 		synaptics,irq-gpio   = <&msm_gpio 65 0x2008>;
 		synaptics,reset-gpio = <&msm_gpio 64 0x0>;
+		synaptics,disable-gpios;
+		synaptics,detect-device;
 		synaptics,i2c-pull-up;
 		synaptics,ub-i2c-addr = <0x38>;
 		synaptics,power-down;
@@ -240,9 +226,7 @@
 
 &i2c_6 { /* BLSP2 QUP2 */
 	status = "disabled"; /* disable unused I2C bus */
-	nq@2b { /* disable NFC */
-		status = "disabled";
-	};
+	/delete-node/ nq@2b; /* remove NFC node */
 };
 
 &i2c_8 { /* BLSP2 QUP4 */
@@ -280,24 +264,13 @@
 /* LCD configuration: */
 &mdss_mdp {
 	dsi_dual_nt35597_video: qcom,mdss_dsi_nt35597_wqxga_video {
-		qcom,mdss-dsi-panel-name = "nt35597 video mode dual dsi panel without DSC";
-		qcom,mdss-dsi-panel-type = "dsi_video_mode";
-		qcom,mdss-dsi-panel-framerate      = <60>;
-		qcom,mdss-dsi-bl-pmic-control-type = "";
-		qcom,mdss-dsi-virtual-channel-id   = <0>;
-		qcom,mdss-dsi-stream = <0>;
 		qcom,mdss-dsi-panel-width   = <800>;
-		qcom,mdss-dsi-panel-height  = <2560>;
 		qcom,mdss-dsi-h-front-porch = <17>;  //MIPICLL 399
 		qcom,mdss-dsi-h-back-porch  = <30>;  //MIPICLL 399
 		qcom,mdss-dsi-h-pulse-width = <4>;
-		qcom,mdss-dsi-h-sync-skew   = <0>;
 		qcom,mdss-dsi-v-back-porch  = <24>;
 		qcom,mdss-dsi-v-front-porch = <16>;
 		qcom,mdss-dsi-v-pulse-width = <8>;
-		qcom,mdss-dsi-bpp = <24>;
-		qcom,mdss-dsi-underflow-color = <0xff>;
-		qcom,mdss-dsi-border-color    = <0>;
 		qcom,mdss-dsi-on-command = [
 			39 01 00 00 01 00 06 f0 55 aa 52 08 00
 			15 01 00 00 01 00 02 c0 0d
@@ -312,23 +285,6 @@
 			15 01 00 00 01 00 02 51 80
 			05 01 00 00 78 00 02 11 00
 			05 01 00 00 15 00 02 29 00];
-		qcom,mdss-dsi-off-command = [05 01 00 00 78 00 02 28 00 05 01 00 00 78 00 02 10 00];
-		qcom,mdss-dsi-on-command-state  = "dsi_lp_mode";
-		qcom,mdss-dsi-off-command-state = "dsi_hs_mode";
-		qcom,mdss-dsi-h-sync-pulse = <0>;
-		qcom,mdss-dsi-traffic-mode = "non_burst_sync_event";
-		qcom,mdss-dsi-bllp-eof-power-mode;
-		qcom,mdss-dsi-bllp-power-mode;
-		qcom,mdss-dsi-lane-0-state;
-		qcom,mdss-dsi-lane-1-state;
-		qcom,mdss-dsi-lane-2-state;
-		qcom,mdss-dsi-lane-3-state;
-		qcom,cmd-sync-wait-broadcast;
 		qcom,mdss-dsi-panel-timings = [D5 32 22 00 60 64 26 34 29 03 04 00]; //MIPICLL 399
-		qcom,mdss-dsi-t-clk-post = <0x02>;
-		qcom,mdss-dsi-t-clk-pre = <0x2a>;
-		qcom,mdss-dsi-dma-trigger = "trigger_sw";
-		qcom,mdss-dsi-mdp-trigger = "none";
-		qcom,mdss-dsi-reset-sequence = <1 20>, <0 20>, <1 50>;
 	};
 };
