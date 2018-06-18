@@ -15,3 +15,8 @@ CONFIG_LOG_BUF_SHIFT=20
 
 # CONFIG_SND_PCI is not set
 # CONFIG_AUDIO_OCMEM is not set
+
+# CONFIG_HID_APPLE is not set
+# CONFIG_HID_ELECOM is not set
+# CONFIG_HID_MAGICMOUSE is not set
+# CONFIG_HID_MICROSOFT is not set
