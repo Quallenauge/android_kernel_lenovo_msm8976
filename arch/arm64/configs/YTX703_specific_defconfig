@@ -2,3 +2,5 @@
 # are device and project specific
 
 CONFIG_LOCALVERSION="_LA.BR.1.3.7_rb1.11"
+
+CONFIG_LOG_BUF_SHIFT=20
