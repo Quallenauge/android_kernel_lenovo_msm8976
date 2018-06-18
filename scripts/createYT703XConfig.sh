@@ -5,6 +5,11 @@ export CROSS_COMPILE="ccache /storage/development/lenovo/android/prebuilts/gcc/l
 #export KCONFIG_CONFIG=/tmp/kernel
 #mkdir -p $KCONFIG_CONFIG
 
-./scripts/kconfig/merge_config.sh arch/arm64/configs/msm-perf_defconfig ../android_config/o-mr1/android-3.18/android-base.cfg ../android_config/o-mr1/android-3.18/android-base-arm64.cfg
-mv .config arch/arm64/configs/YTX703_defconfig
+./scripts/kconfig/merge_config.sh \
+ arch/arm64/configs/msm-perf_defconfig \
+ ../android_config/o-mr1/android-3.18/android-base.cfg \
+ ../android_config/o-mr1/android-3.18/android-base-arm64.cfg \
+ arch/arm64/configs/YTX703_specific_defconfig
 
+mv .config arch/arm64/configs/lineage_YTX703_defconfig
+#make mrproper
