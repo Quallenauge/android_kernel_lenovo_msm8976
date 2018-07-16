@@ -130,9 +130,12 @@
 	        15 01 00 00 01 00 02 53 24 /* Enable backlight via pwm control. Control backlight also when dimming isn't active. */
 	        15 01 00 00 01 00 02 51 80 /* Set initial brightness set to 0x80 */
 	        05 01 00 00 78 00 02 11 00 /* Exit the sleep mode */
-	        05 01 00 00 15 00 02 29 00]; /* Display on */
+	       ];
 	/* DSI PHY timings */
 	qcom,mdss-dsi-panel-timings = [D5 32 22 00 60 64 26 34 29 03 04 00];
+	qcom,mdss-dsi-post-panel-on-command =
+	        [05 01 00 00 15 00 02 29 00 /* Display on */
+	        ];
 };
 /*
  * Overrides msm8976-mdss-mtp.dtsi
