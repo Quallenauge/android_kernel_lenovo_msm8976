@@ -282,11 +282,19 @@
 			15 01 00 00 01 00 02 f7 01
 			39 01 00 00 01 00 05 ff aa 55 a5 00
 			15 01 00 00 01 00 02 62 01
-			15 01 00 00 01 00 02 55 00 //CABC mode (0:off, 1:UI, 2:picture, 3:video), p.229
 			15 01 00 00 01 00 02 53 24
 			15 01 00 00 01 00 02 51 80
 			05 01 00 00 78 00 02 11 00
 			05 01 00 00 15 00 02 29 00];
 		qcom,mdss-dsi-panel-timings = [D5 32 22 00 60 64 26 34 29 03 04 00]; //MIPICLL 399
+
+		/* CABC init commands / values */
+		cm,mdss-livedisplay-cabc-cmd = [
+			15 01 00 00 01 00 02 55 00 //CABC mode (0:off, 1:UI, 2:picture, 3:video), p.229
+		];
+
+		cm,mdss-livedisplay-cabc-ui-value = <0x01>;
+		cm,mdss-livedisplay-cabc-image-value = <0x02>;
+		cm,mdss-livedisplay-cabc-video-value = <0x03>;
 	};
 };
