@@ -3973,6 +3973,8 @@ int apply_workqueue_attrs(struct workqueue_struct *wq,
 	struct workqueue_attrs *new_attrs, *tmp_attrs;
 	struct pool_workqueue **pwq_tbl, *dfl_pwq;
 	int node, ret;
+	// Assign unbound (aka "power efficient") workqueues to the 4 little cluster cpus
+	const unsigned long allowed_unbound_wq_cpus = 0xF;
 
 	/* only unbound workqueues can change attributes */
 	if (WARN_ON(!(wq->flags & WQ_UNBOUND)))
@@ -3994,7 +3996,7 @@ int apply_workqueue_attrs(struct workqueue_struct *wq,
 
 	/* make a copy of @attrs and sanitize it */
 	copy_workqueue_attrs(new_attrs, attrs);
-	cpumask_and(new_attrs->cpumask, new_attrs->cpumask, cpu_possible_mask);
+	cpumask_and(new_attrs->cpumask, new_attrs->cpumask, to_cpumask(&allowed_unbound_wq_cpus));
 
 	/*
 	 * We may create multiple pwqs with differing cpumasks.  Make a
