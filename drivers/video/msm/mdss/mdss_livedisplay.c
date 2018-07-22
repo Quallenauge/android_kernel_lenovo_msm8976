@@ -169,6 +169,8 @@ static int mdss_livedisplay_update_locked(struct mdss_dsi_ctrl_pdata *ctrl_pdata
 {
 	int ret = 0;
 	struct mdss_panel_info *pinfo = NULL;
+	struct mdss_panel_data *secondary_panel_data = NULL;
+	struct mdss_dsi_ctrl_pdata *secondary_ctrl_pdata = NULL;
 	struct mdss_livedisplay_ctx *mlc = NULL;
 	unsigned int len = 0, dlen = 0;
 	struct dsi_panel_cmds dsi_cmds;
@@ -269,7 +271,28 @@ static int mdss_livedisplay_update_locked(struct mdss_dsi_ctrl_pdata *ctrl_pdata
 	// Parse the command and send it
 	ret = parse_dsi_cmds(&dsi_cmds, (const uint8_t *)cmd_buf, len);
 	if (ret == 0) {
-		mdss_dsi_panel_cmds_send(ctrl_pdata, &dsi_cmds, CMD_REQ_COMMIT);
+		secondary_panel_data = ctrl_pdata->panel_data.next;
+		if (secondary_panel_data){
+			secondary_ctrl_pdata = container_of(secondary_panel_data, struct mdss_dsi_ctrl_pdata, panel_data);
+		}
+		/*
+		 * DCS commands to update cabc mode are usually sent at
+		 * the same time to both the controllers. However, if
+		 * sync_wait is enabled, we need to ensure that the
+		 * dcs commands are first sent to the non-trigger
+		 * controller so that when the commands are triggered,
+		 * both controllers receive it at the same time.
+		 */
+		if (mdss_dsi_sync_wait_trigger(ctrl_pdata)) {
+			if (secondary_ctrl_pdata){
+				mdss_dsi_panel_cmds_send(secondary_ctrl_pdata, &dsi_cmds, CMD_REQ_COMMIT);
+			}
+			mdss_dsi_panel_cmds_send(ctrl_pdata, &dsi_cmds, CMD_REQ_COMMIT);
+		} else {
+			mdss_dsi_panel_cmds_send(ctrl_pdata, &dsi_cmds, CMD_REQ_COMMIT);
+			if (secondary_ctrl_pdata)
+				mdss_dsi_panel_cmds_send(secondary_ctrl_pdata, &dsi_cmds, CMD_REQ_COMMIT);
+		}
 		kfree(dsi_cmds.buf);
 		kfree(dsi_cmds.cmds);
 	} else {
