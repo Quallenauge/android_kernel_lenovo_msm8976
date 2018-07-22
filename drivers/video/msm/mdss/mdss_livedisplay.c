@@ -48,6 +48,8 @@
  *      in the panel devicetree. Boolean.
  */
 
+struct mutex mdss_livedisplay_ctx_lock;
+
 extern void mdss_dsi_panel_cmds_send(struct mdss_dsi_ctrl_pdata *ctrl,
 		struct dsi_panel_cmds *pcmds, u32 flags);
 
@@ -310,9 +312,9 @@ int mdss_livedisplay_update(struct mdss_dsi_ctrl_pdata *ctrl_pdata,
 	if (mlc->mfd == NULL)
 		return -ENODEV;
 
-	mutex_lock(&mlc->lock);
+	mutex_lock(&mdss_livedisplay_ctx_lock);
 	ret = mdss_livedisplay_update_locked(ctrl_pdata, types);
-	mutex_unlock(&mlc->lock);
+	mutex_unlock(&mdss_livedisplay_ctx_lock);
 
 	return ret;
 }
@@ -336,7 +338,7 @@ static ssize_t mdss_livedisplay_set_cabc(struct device *dev,
 	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)fbi->par;
 	struct mdss_livedisplay_ctx *mlc = get_ctx(mfd);
 
-	mutex_lock(&mlc->lock);
+	mutex_lock(&mdss_livedisplay_ctx_lock);
 
 	sscanf(buf, "%du", &level);
 	if (level >= CABC_OFF && level < CABC_MAX &&
@@ -345,7 +347,7 @@ static ssize_t mdss_livedisplay_set_cabc(struct device *dev,
 		mdss_livedisplay_update_locked(get_ctrl(mfd), MODE_CABC);
 	}
 
-	mutex_unlock(&mlc->lock);
+	mutex_unlock(&mdss_livedisplay_ctx_lock);
 
 	return count;
 }
@@ -369,7 +371,7 @@ static ssize_t mdss_livedisplay_set_sre(struct device *dev,
 	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)fbi->par;
 	struct mdss_livedisplay_ctx *mlc = get_ctx(mfd);
 
-	mutex_lock(&mlc->lock);
+	mutex_lock(&mdss_livedisplay_ctx_lock);
 
 	sscanf(buf, "%du", &level);
 	if (level >= SRE_OFF && level < SRE_MAX &&
@@ -378,7 +380,7 @@ static ssize_t mdss_livedisplay_set_sre(struct device *dev,
 		mdss_livedisplay_update_locked(get_ctrl(mfd), MODE_SRE);
 	}
 
-	mutex_unlock(&mlc->lock);
+	mutex_unlock(&mdss_livedisplay_ctx_lock);
 
 	return count;
 }
@@ -402,7 +404,7 @@ static ssize_t mdss_livedisplay_set_color_enhance(struct device *dev,
 	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)fbi->par;
 	struct mdss_livedisplay_ctx *mlc = get_ctx(mfd);
 
-	mutex_lock(&mlc->lock);
+	mutex_lock(&mdss_livedisplay_ctx_lock);
 
 	sscanf(buf, "%du", &value);
 	if ((value == 0 || value == 1)
@@ -411,7 +413,7 @@ static ssize_t mdss_livedisplay_set_color_enhance(struct device *dev,
 		mdss_livedisplay_update_locked(get_ctrl(mfd), MODE_COLOR_ENHANCE);
 	}
 
-	mutex_unlock(&mlc->lock);
+	mutex_unlock(&mdss_livedisplay_ctx_lock);
 
 	return count;
 }
@@ -435,7 +437,7 @@ static ssize_t mdss_livedisplay_set_aco(struct device *dev,
 	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)fbi->par;
 	struct mdss_livedisplay_ctx *mlc = get_ctx(mfd);
 
-	mutex_lock(&mlc->lock);
+	mutex_lock(&mdss_livedisplay_ctx_lock);
 
 	sscanf(buf, "%du", &value);
 	if ((value == 0 || value == 1)
@@ -444,7 +446,7 @@ static ssize_t mdss_livedisplay_set_aco(struct device *dev,
 		mdss_livedisplay_update_locked(get_ctrl(mfd), MODE_AUTO_CONTRAST);
 	}
 
-	mutex_unlock(&mlc->lock);
+	mutex_unlock(&mdss_livedisplay_ctx_lock);
 
 	return count;
 }
@@ -468,7 +470,7 @@ static ssize_t mdss_livedisplay_set_preset(struct device *dev,
 	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)fbi->par;
 	struct mdss_livedisplay_ctx *mlc = get_ctx(mfd);
 
-	mutex_lock(&mlc->lock);
+	mutex_lock(&mdss_livedisplay_ctx_lock);
 
 	sscanf(buf, "%du", &value);
 	if (value < 0 || value >= mlc->num_presets)
@@ -477,7 +479,7 @@ static ssize_t mdss_livedisplay_set_preset(struct device *dev,
 	mlc->preset = value;
 	mdss_livedisplay_update_locked(get_ctrl(mfd), MODE_PRESET);
 
-	mutex_unlock(&mlc->lock);
+	mutex_unlock(&mdss_livedisplay_ctx_lock);
 
 	return count;
 }
@@ -537,7 +539,7 @@ static ssize_t mdss_livedisplay_set_rgb(struct device *dev,
 	if (b < 0 || b > 32768)
 		return -EINVAL;
 
-	mutex_lock(&mlc->lock);
+	mutex_lock(&mdss_livedisplay_ctx_lock);
 
 	mlc->r = r;
 	mlc->g = g;
@@ -547,7 +549,7 @@ static ssize_t mdss_livedisplay_set_rgb(struct device *dev,
 			(mdss_livedisplay_set_rgb_locked(mfd) == 0))
 		ret = count;
 
-	mutex_unlock(&mlc->lock);
+	mutex_unlock(&mdss_livedisplay_ctx_lock);
 
 	return ret;
 }
@@ -572,7 +574,7 @@ int mdss_livedisplay_parse_dt(struct device_node *np, struct mdss_panel_info *pi
 		return -ENODEV;
 
 	mlc = kzalloc(sizeof(struct mdss_livedisplay_ctx), GFP_KERNEL);
-	mutex_init(&mlc->lock);
+	mutex_init(&mdss_livedisplay_ctx_lock);
 
 	link_state = of_get_property(np, "cm,mdss-livedisplay-command-state", NULL);
 	if (link_state && !strcmp(link_state, "dsi_lp_mode"))

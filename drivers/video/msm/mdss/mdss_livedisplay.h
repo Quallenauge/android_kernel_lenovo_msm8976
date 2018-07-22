@@ -22,6 +22,8 @@
 
 #define MAX_PRESETS 10
 
+extern struct mutex mdss_livedisplay_ctx_lock;
+
 struct mdss_livedisplay_ctx {
 	uint8_t cabc_ui_value;
 	uint8_t cabc_image_value;
@@ -59,7 +61,6 @@ struct mdss_livedisplay_ctx {
 	uint32_t r, g, b;
 	struct msm_fb_data_type *mfd;
 
-	struct mutex lock;
 };
 
 enum {
