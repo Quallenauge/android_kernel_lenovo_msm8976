@@ -169,6 +169,8 @@ static int mdss_livedisplay_update_locked(struct mdss_dsi_ctrl_pdata *ctrl_pdata
 {
 	int ret = 0;
 	struct mdss_panel_info *pinfo = NULL;
+	struct mdss_panel_data *secondary_panel_data = NULL;
+	struct mdss_dsi_ctrl_pdata *secondary_ctrl_pdata = NULL;
 	struct mdss_livedisplay_ctx *mlc = NULL;
 	unsigned int len = 0, dlen = 0;
 	struct dsi_panel_cmds dsi_cmds;
@@ -181,6 +183,8 @@ static int mdss_livedisplay_update_locked(struct mdss_dsi_ctrl_pdata *ctrl_pdata
 	pinfo = &(ctrl_pdata->panel_data.panel_info);
 	if (pinfo == NULL)
 		return -ENODEV;
+
+	secondary_panel_data = ctrl_pdata->panel_data.next;
 
 	mlc = pinfo->livedisplay;
 	if (mlc == NULL)
@@ -270,6 +274,10 @@ static int mdss_livedisplay_update_locked(struct mdss_dsi_ctrl_pdata *ctrl_pdata
 	ret = parse_dsi_cmds(mlc, &dsi_cmds, (const uint8_t *)cmd_buf, len);
 	if (ret == 0) {
 		mdss_dsi_panel_cmds_send(ctrl_pdata, &dsi_cmds, CMD_REQ_COMMIT);
+		if (secondary_panel_data){
+			secondary_ctrl_pdata = container_of(secondary_panel_data, struct mdss_dsi_ctrl_pdata, panel_data);
+			mdss_dsi_panel_cmds_send(secondary_ctrl_pdata, &dsi_cmds, CMD_REQ_COMMIT);
+		}
 		kfree(dsi_cmds.buf);
 		kfree(dsi_cmds.cmds);
 	} else {
