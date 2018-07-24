@@ -117,6 +117,10 @@
 	qcom,mdss-dsi-v-back-porch = <24>;  /* Vertical back porch in pixels; previously 7 */
 	qcom,mdss-dsi-v-front-porch = <16>; /* Vertical front porch in pixels; previously 8 */
 	qcom,mdss-dsi-v-pulse-width = <8>;  /* Previously 1 */
+	qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_dcs"; /* control backlight via dsi commands */
+	/* Backlight controller operates in range 0<x<256 */
+	qcom,mdss-dsi-bl-min-level = <0x01>;
+	qcom,mdss-dsi-bl-max-level = <0xFF>;
 	qcom,mdss-dsi-on-command =
 	       [39 01 00 00 01 00 06 f0 55 aa 52 08 00 /* Set internal registers */
 	        15 01 00 00 01 00 02 c0 0d
@@ -197,8 +201,9 @@
 		compatible = "ti,lp8557";
 		reg = <0x2c>;
 		bl-name = "lcd-bl";
-		dev-ctrl = /bits/ 8 <0x41>;
-		init-brt = /bits/ 8 <0x80>;
+		dev-ctrl = /bits/ 8 <0x07>; /* see lp8557 documentation, unshaped PWM × brigthness register mode */
+		init-brt = /bits/ 8 <0xFF>; /* 255 as initial brightness value;
+					       will be multiplied with the value provided by display pwm */
 		/* Full-scale LED current (I_LED):
 		 * 0:  5 mA,  1: 10 mA,  2: 13 mA,  3: 15 mA,
 		 * 4: 18 mA,  5: 20 mA,  6: 23 mA,  7: 25 mA
