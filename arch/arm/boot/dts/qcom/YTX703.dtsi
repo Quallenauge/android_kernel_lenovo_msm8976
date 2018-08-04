@@ -70,4 +70,11 @@
 &mdss_dsi1 {
 	/delete-property/ qcom,platform-bklight-en-gpio;
 };
+/*
+ * Disable Linux splash screen at boot
+ * Overrides msm8976-mdss.dtsi
+ */
+&mdss_fb0 {
+	/delete-property/ qcom,mdss-fb-splash-logo-enabled;
+};
 
