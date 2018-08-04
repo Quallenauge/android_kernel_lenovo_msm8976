@@ -57,4 +57,17 @@
 	/* DSI PHY timings */
 	qcom,mdss-dsi-panel-timings = [D5 32 22 00 60 64 26 34 29 03 04 00];
 };
+/*
+ * Overrides msm8976-mdss-mtp.dtsi
+ */
+&dsi_dual_nt35597_video {
+	/delete-property/ qcom,mdss-dsi-pan-enable-dynamic-fps;
+	/delete-property/ qcom,mdss-dsi-pan-fps-update;
+};
+&mdss_dsi0 {
+	/delete-property/ qcom,platform-bklight-en-gpio;
+};
+&mdss_dsi1 {
+	/delete-property/ qcom,platform-bklight-en-gpio;
+};
 
