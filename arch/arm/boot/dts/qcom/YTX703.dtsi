@@ -322,3 +322,12 @@
 	/delete-property/ qcom,charging-disabled;
 };
 
+/*
+ * Audio settings
+ * - Overrides msm8976.dtsi
+ * - Documentation/devicetree/bindings/sound/qcom-audio-dev.txt
+ */
+&ext_codec {
+	qcom,msm-mbhc-hphl-swh = <1>; /* Headset detection switch is normally open */
+};
+
