@@ -260,3 +260,20 @@
 	qcom,actuator-type = "erm";
 	qcom,vmax-mv = <2200>;
 };
+/*
+ * Charger
+ * Overrides msm-pmi8950.dtsi
+ */
+&pmi8950_charger {
+	qcom,battery-psy-name= "battery";
+	qcom,fastchg-current-ma = <3000>;
+	qcom,iterm-disabled;
+	/delete-property/ qcom,iterm-ma;
+	/delete-property/ qcom,float-voltage-mv;
+	/delete-property/ qcom,resume-delta-mv;
+	/delete-property/ qcom,autoadjust-vfloat;
+	/delete-property/ qcom,force-aicl-rerun;
+	/delete-property/ qcom,aicl-rerun-period-s;
+	/delete-property/ qcom,charging-disabled;
+};
+
