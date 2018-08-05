@@ -183,6 +183,8 @@
 		synaptics,reset-delay-ms = <60>;
 		synaptics,ub-i2c-addr = <0x20>;
 		synaptics,irq-flags = <0x2008>; /* IRQF_ONESHOT | IRQF_TRIGGER_LOW */
+		synaptics,swap-axes; /* ro.sf.hwrotation=90 */
+		synaptics,y-flip;
 		synaptics,device1 {
 			synaptics,package-id = <7813>;
 		};
