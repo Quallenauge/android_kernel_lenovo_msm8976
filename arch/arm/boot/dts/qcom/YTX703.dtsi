@@ -158,8 +158,8 @@
 		reg = <0x38>;
 		interrupt-parent = <&msm_gpio>;
 		interrupts = <65 0x2008>;
-		vdd_ana-supply = <&pm8950_l17>;
-		vcc_i2c-supply = <&pm8950_l6>;
+		avdd-supply = <&pm8950_l17>;
+		vdd-supply = <&pm8950_l6>;
 		synaptics,pwr-reg-name = "vdd_ana";
 		synaptics,bus-reg-name = "vcc_i2c";
 		clock-names = "iface_clk", "core_clk";
