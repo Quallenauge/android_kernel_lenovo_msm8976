@@ -327,6 +327,18 @@
 	/delete-property/ qcom,charging-disabled;
 };
 
+/* SDHC controller
+ * - Overrides msm8976-mtp.dtsi
+ * - Documentation/devicetree/bindings/mmc/sdhci-msm.txt
+ */
+&sdhc_2 { /* SDC2 SD card slot */
+	/* Disable OF_GPIO_ACTIVE_LOW by default.
+	 * Setting will be overridden by drivers/mmc/host/sdhci-msm.c
+	 * if bootloader sets com_board_ver < 3 in cmdline.
+	 */
+	cd-gpios = <&msm_gpio 100 0x0>;
+};
+
 /*
  * Audio settings
  * - Overrides msm8976.dtsi
