@@ -26,6 +26,12 @@
 };
 
 &soc {
+	/* Compensate for hardware-reversed VOL-UP and VOL-DOWN buttons */
+	gpio_keys {
+		vol_up {
+			linux,code = <114>; /* KEY_VOLUMEDOWN */
+		};
+	};
 	qcom,mdss_mdp@1a00000 {
 		/delete-property/ qcom,mdss-ppb-off; //  = <0x00000420>;
 		qcom,mdss-cdm-off = <0x0007A200>;
@@ -236,6 +242,10 @@
 				qcom,s1-timer = <6720>; /* button delay until poweroff */
 				qcom,s2-timer = <2000>; /* button delay until reboot */
 				qcom,s2-type = <5>;
+			};
+			/* Compensate for hardware-reversed VOL-UP and VOL-DOWN buttons */
+			qcom,pon_2 {
+				linux,code = <115>; /* KEY_VOLUMEUP */
 			};
 		};
 	};
