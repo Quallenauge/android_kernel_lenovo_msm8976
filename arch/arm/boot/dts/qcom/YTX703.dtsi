@@ -138,6 +138,18 @@
 		compatible = "qcom,bq27541-battery";
 		reg = <0x55>;
 	};
+	backlight@2c {
+		compatible = "ti,lp8557";
+		reg = <0x2c>;
+		bl-name = "lcd-bl";
+		dev-ctrl = /bits/ 8 <0x41>;
+		init-brt = /bits/ 8 <0x80>;
+		/* 4V OV, 4 output LED string enabled */
+		rom_14h {
+			rom-addr = /bits/ 8 <0x14>;
+			rom-val = /bits/ 8 <0xbf>;
+		};
+	};
 };
 &i2c_8 {
 	aw2013@45 {
