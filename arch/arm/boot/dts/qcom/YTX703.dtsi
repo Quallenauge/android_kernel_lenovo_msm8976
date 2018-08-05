@@ -329,5 +329,6 @@
  */
 &ext_codec {
 	qcom,msm-mbhc-hphl-swh = <1>; /* Headset detection switch is normally open */
+	qcom,max-aux-codec = <0>; /* Don't use any wsa881x audio codec */
 };
 
