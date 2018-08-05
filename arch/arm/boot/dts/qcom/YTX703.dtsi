@@ -71,6 +71,26 @@
 		qcom,pins = <&gp 96>, <&gp 135>, <&gp 101>;
 		qcom,num-grp-pins = <3>;
 	};
+	charger_int_pin {
+		qcom,pins = <&gp 68>;
+		qcom,num-grp-pins = <1>;
+		qcom,pin-func = <1>;
+		label = "charger_int_pin";
+		charger_int_default: charger_int_default {
+			drive-strength = <2>; /* mA */
+			bias-pull-up;
+		};
+	};
+	charger_psel_pin {
+		qcom,pins = <&gp 16>;
+		qcom,num-grp-pins = <1>;
+		qcom,pin-func = <0>;
+		label = "charger_psel_pin";
+		charger_psel_default:  charger_psel_default {
+			drive-strength = <2>; /* mA */
+			bias-pull-up;
+		};
+	};
 };
 
 /* LCD panel
@@ -162,7 +182,7 @@
 		interrupt-parent = <&msm_gpio>;
 		interrupts = <68 0>;
 		pinctrl-names = "default";
-		pinctrl-0 = <&charger_int_default &charger_psel_default>; /* Not yet defined */
+		pinctrl-0 = <&charger_int_default &charger_psel_default>;
 		qcom,psel-gpio = <&msm_gpio 16 0>;
 	};
 	bq27541-battery@55 {
