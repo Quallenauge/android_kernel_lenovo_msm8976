@@ -190,6 +190,9 @@
 		};
 	};
 };
+&i2c_6 {
+	/delete-node/ nq@2b;
+};
 &i2c_8 {
 	aw2013@45 {
 		compatible = "awinic,aw2013";
