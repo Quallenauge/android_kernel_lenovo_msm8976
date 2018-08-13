@@ -1,0 +1,24 @@
+# Configs to select Lenovo msm8916 family devices
+
+config MACH_LENOVO
+	bool "Lenovo devices"
+	depends on ARCH_MSM8916
+	help
+	  Support for Lenovo products
+
+config MACH_LENOVO_MSM8916
+	bool "Lenovo MSM8916 family"
+	depends on MACH_LENOVO
+	help
+	  Support for Lenovo boards using the MSM8916 chipset family
+
+menu "Lenovo board selection"
+	depends on MACH_LENOVO_MSM8916
+
+config MACH_LENOVO_YTX703
+	bool "YTX703 boards"
+	depends on MACH_LENOVO_MSM8916
+	help
+	  Support for Lenovo Yoga Tab 3 Plus Wi-Fi/LTE (YTX703F/YTX703L)
+
+endmenu
