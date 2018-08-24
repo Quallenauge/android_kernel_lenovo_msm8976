@@ -187,6 +187,7 @@
 	};
 	bq27541-battery@55 {
 		compatible = "qcom,bq27541-battery";
+		qcom,max-design-voltage-mv = <4350>;
 		reg = <0x55>;
 	};
 	backlight@2c {
