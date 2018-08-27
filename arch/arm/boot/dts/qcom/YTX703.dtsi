@@ -195,6 +195,11 @@
 		bl-name = "lcd-bl";
 		dev-ctrl = /bits/ 8 <0x41>;
 		init-brt = /bits/ 8 <0x80>;
+		/* Full-scale LED current (I_LED):
+		 * 0:  5 mA,  1: 10 mA,  2: 13 mA,  3: 15 mA,
+		 * 4: 18 mA,  5: 20 mA,  6: 23 mA,  7: 25 mA
+		 */
+		maxcurr-led = <7>;
 		/* 4V OV, 4 output LED string enabled */
 		rom_14h {
 			rom-addr = /bits/ 8 <0x14>;

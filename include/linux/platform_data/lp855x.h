@@ -134,6 +134,8 @@ struct lp855x_rom_data {
  * @initial_brightness : initial value of backlight brightness
  * @period_ns : platform specific pwm period value. unit is nano.
 		Only valid when mode is PWM_BASED.
+ * @maxcurr_led : 3-bit encoding of full-scale LED current, from 0 (5 mA)
+ *                to 7 (25 mA).
  * @size_program : total size of lp855x_rom_data
  * @rom_data : list of new eeprom/eprom registers
  */
@@ -141,6 +143,7 @@ struct lp855x_platform_data {
 	const char *name;
 	u8 device_control;
 	u8 initial_brightness;
+	u8 maxcurr_led;
 	unsigned int period_ns;
 	int size_program;
 	struct lp855x_rom_data *rom_data;

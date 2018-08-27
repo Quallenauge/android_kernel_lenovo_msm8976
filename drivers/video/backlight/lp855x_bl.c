@@ -33,6 +33,7 @@
 #define LP8557_BL_OFF			0x00
 #define LP8557_BRIGHTNESS_CTRL		0x04
 #define LP8557_CONFIG			0x10
+#define LP8557_CURRENT			0x11
 #define LP8555_EPROM_START		0x10
 #define LP8555_EPROM_END		0x7A
 #define LP8557_EPROM_START		0x10
@@ -53,12 +54,14 @@ struct lp855x;
  * @pre_init_device: init device function call before updating the brightness
  * @reg_brightness: register address for brigthenss control
  * @reg_devicectrl: register address for device control
+ * @reg_currentctrl: register address for current control
  * @post_init_device: late init device function call
  */
 struct lp855x_device_config {
 	int (*pre_init_device)(struct lp855x *);
 	u8 reg_brightness;
 	u8 reg_devicectrl;
+	u8 reg_currentctrl;
 	int (*post_init_device)(struct lp855x *);
 };
 
@@ -150,6 +153,7 @@ static struct lp855x_device_config lp855x_dev_cfg = {
 static struct lp855x_device_config lp8557_dev_cfg = {
 	.reg_brightness = LP8557_BRIGHTNESS_CTRL,
 	.reg_devicectrl = LP8557_CONFIG,
+	.reg_currentctrl = LP8557_CURRENT,
 	.pre_init_device = lp8557_bl_off,
 	.post_init_device = lp8557_bl_on,
 };
@@ -201,6 +205,11 @@ static int lp855x_configure(struct lp855x *lp)
 
 	val = pd->device_control;
 	ret = lp855x_write_byte(lp, lp->cfg->reg_devicectrl, val);
+	if (ret)
+		goto err;
+
+	val = pd->maxcurr_led;
+	ret = lp855x_write_byte(lp, lp->cfg->reg_currentctrl, val);
 	if (ret)
 		goto err;
 
@@ -359,6 +368,10 @@ static int lp855x_parse_dt(struct device *dev, struct device_node *node)
 	of_property_read_u8(node, "dev-ctrl", &pdata->device_control);
 	of_property_read_u8(node, "init-brt", &pdata->initial_brightness);
 	of_property_read_u32(node, "pwm-period", &pdata->period_ns);
+	if (of_property_read_u8(node, "maxcurr-led", &pdata->maxcurr_led))
+		pdata->maxcurr_led = 7;
+	if (pdata->maxcurr_led > 7)
+		pdata->maxcurr_led = 7;
 
 	/* Fill ROM platform data if defined */
 	rom_length = of_get_child_count(node);
