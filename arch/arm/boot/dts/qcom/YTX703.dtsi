@@ -131,8 +131,6 @@
 	        39 01 00 00 01 00 05 ff aa 55 a5 00 /* Set internal registers */
 	        15 01 00 00 01 00 02 62 01
 	        15 01 00 00 01 00 02 55 00 /* CABC (0: off, 1: UI, 2: Picture, 3: Video) */
-	        15 01 00 00 01 00 02 53 2C /* Enable backlight via pwm control.
-	                                      Enable dimming in general (with or w/o cabc). */
 	        15 01 00 00 01 00 02 51 80 /* Set initial brightness set to 0x80 */
 	        05 01 00 00 78 00 02 11 00 /* Exit the sleep mode */
 	       ];
@@ -144,6 +142,8 @@
 	        39 01 00 00 00 00 02 05 24 /* Moving mode dimming 32step, still mode 32step */
 	        39 01 00 00 00 00 02 FB 01 /* MTP do not reload CMD2 P3 */
 	        39 01 00 00 01 00 02 FF 10 /* Enter CMD1 */
+	        15 01 00 00 01 00 02 53 2C /* Enable backlight via pwm control.
+	                                      Enable dimming in general (with or w/o cabc). */
 	        05 01 00 00 15 00 02 29 00 /* Display on */
 	      ];
 };
