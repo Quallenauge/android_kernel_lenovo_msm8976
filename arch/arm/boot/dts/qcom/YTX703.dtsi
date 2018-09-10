@@ -121,6 +121,7 @@
 	/* Backlight controller operates in range 0<x<256 */
 	qcom,mdss-dsi-bl-min-level = <0x01>;
 	qcom,mdss-dsi-bl-max-level = <0xFF>;
+	qcom,mdss-dsi-post-init-delay = <0x1>;
 	qcom,mdss-dsi-on-command =
 	       [39 01 00 00 01 00 06 f0 55 aa 52 08 00 /* Set internal registers */
 	        15 01 00 00 01 00 02 c0 0d
@@ -131,7 +132,7 @@
 	        39 01 00 00 01 00 05 ff aa 55 a5 00 /* Set internal registers */
 	        15 01 00 00 01 00 02 62 01
 	        15 01 00 00 01 00 02 55 00 /* CABC (0: off, 1: UI, 2: Picture, 3: Video) */
-	        15 01 00 00 01 00 02 51 80 /* Set initial brightness set to 0x80 */
+	        15 01 00 00 01 00 02 5E 10 /* Set minimal brightness used in cabc */
 	        05 01 00 00 78 00 02 11 00 /* Exit the sleep mode */
 	       ];
 	/* DSI PHY timings */
