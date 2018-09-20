@@ -221,6 +221,11 @@
 			rom-addr = /bits/ 8 <0x14>;
 			rom-val = /bits/ 8 <0xbf>;
 		};
+		/* Disable dimming */
+		rom_15h {
+			rom-addr = /bits/ 8 <0x15>;
+			rom-val = /bits/ 8 <0x00>;
+		};
 	};
 };
 &i2c_4 {
