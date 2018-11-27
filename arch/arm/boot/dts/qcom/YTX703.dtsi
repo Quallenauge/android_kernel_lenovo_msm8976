@@ -225,7 +225,7 @@
 &i2c_4 {
 	/delete-node/ synaptics@20;
 	synaptics_dsx@38 {
-		compatible = "synaptics,dsx-i2c";
+		compatible = "synaptics,dsx";
 		reg = <0x38>;
 		interrupt-parent = <&msm_gpio>;
 		interrupts = <65 0x2008>;
