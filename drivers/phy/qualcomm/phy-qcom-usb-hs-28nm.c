@@ -16,6 +16,7 @@
 #include <linux/regulator/consumer.h>
 #include <linux/reset.h>
 #include <linux/slab.h>
+#include <linux/ulpi/driver.h>
 
 /* PHY register and bit definitions */
 #define PHY_CTRL_COMMON0		0x078
@@ -55,7 +56,7 @@ struct hsphy_data {
 };
 
 struct hsphy_priv {
-	void __iomem *base;
+	struct ulpi *ulpi;
 	struct clk_bulk_data *clks;
 	int num_clks;
 	struct reset_control *phy_reset;
@@ -83,18 +84,18 @@ static void qcom_snps_hsphy_enable_hv_interrupts(struct hsphy_priv *priv)
 	u32 val;
 
 	/* Clear any existing interrupts before enabling the interrupts */
-	val = readb(priv->base + PHY_INTR_CLEAR0);
+	val = ulpi_read(priv->ulpi, PHY_INTR_CLEAR0);
 	val |= DPDM_MASK;
-	writeb(val, priv->base + PHY_INTR_CLEAR0);
+	ulpi_write(priv->ulpi, PHY_INTR_CLEAR0, val);
 
-	writeb(0x0, priv->base + PHY_IRQ_CMD);
+	ulpi_write(priv->ulpi, PHY_IRQ_CMD, 0x0);
 	usleep_range(200, 220);
-	writeb(0x1, priv->base + PHY_IRQ_CMD);
+	ulpi_write(priv->ulpi, PHY_IRQ_CMD, 0x1);
 
 	/* Make sure the interrupts are cleared */
 	usleep_range(200, 220);
 
-	val = readb(priv->base + PHY_INTR_MASK0);
+	val = ulpi_read(priv->ulpi, PHY_INTR_MASK0);
 	switch (priv->mode) {
 	case PHY_MODE_USB_HOST_HS:
 	case PHY_MODE_USB_HOST_FS:
@@ -111,26 +112,26 @@ static void qcom_snps_hsphy_enable_hv_interrupts(struct hsphy_priv *priv)
 		val |= DP_0_1 | DM_0_1;
 		break;
 	}
-	writeb(val, priv->base + PHY_INTR_MASK0);
+	ulpi_write(priv->ulpi, PHY_INTR_MASK0, val);
 }
 
 static void qcom_snps_hsphy_disable_hv_interrupts(struct hsphy_priv *priv)
 {
 	u32 val;
 
-	val = readb(priv->base + PHY_INTR_MASK0);
+	val = ulpi_read(priv->ulpi, PHY_INTR_MASK0);
 	val &= ~DPDM_MASK;
-	writeb(val, priv->base + PHY_INTR_MASK0);
+	ulpi_write(priv->ulpi, PHY_INTR_MASK0, val);
 
 	/* Clear any pending interrupts */
-	val = readb(priv->base + PHY_INTR_CLEAR0);
+	val = ulpi_read(priv->ulpi, PHY_INTR_CLEAR0);
 	val |= DPDM_MASK;
-	writeb(val, priv->base + PHY_INTR_CLEAR0);
+	ulpi_write(priv->ulpi, PHY_INTR_CLEAR0, val);
 
-	writeb(0x0, priv->base + PHY_IRQ_CMD);
+	ulpi_write(priv->ulpi, PHY_IRQ_CMD, 0x0);
 	usleep_range(200, 220);
 
-	writeb(0x1, priv->base + PHY_IRQ_CMD);
+	ulpi_write(priv->ulpi, PHY_IRQ_CMD, 0x1);
 	usleep_range(200, 220);
 }
 
@@ -138,18 +139,18 @@ static void qcom_snps_hsphy_enter_retention(struct hsphy_priv *priv)
 {
 	u32 val;
 
-	val = readb(priv->base + PHY_CTRL_COMMON0);
+	val = ulpi_read(priv->ulpi, PHY_CTRL_COMMON0);
 	val |= SIDDQ;
-	writeb(val, priv->base + PHY_CTRL_COMMON0);
+	ulpi_write(priv->ulpi, PHY_CTRL_COMMON0, val);
 }
 
 static void qcom_snps_hsphy_exit_retention(struct hsphy_priv *priv)
 {
 	u32 val;
 
-	val = readb(priv->base + PHY_CTRL_COMMON0);
+	val = ulpi_read(priv->ulpi, PHY_CTRL_COMMON0);
 	val &= ~SIDDQ;
-	writeb(val, priv->base + PHY_CTRL_COMMON0);
+	ulpi_write(priv->ulpi, PHY_CTRL_COMMON0, val);
 }
 
 static int qcom_snps_hsphy_power_on(struct phy *phy)
@@ -210,7 +211,7 @@ static void qcom_snps_hsphy_init_sequence(struct hsphy_priv *priv)
 	seq = data->init_seq;
 
 	for (i = 0; i < data->init_seq_num; i++, seq++) {
-		writeb(seq->val, priv->base + seq->offset);
+		ulpi_write(priv->ulpi, seq->offset, seq->val);
 		if (seq->delay)
 			usleep_range(seq->delay, seq->delay + 10);
 	}
@@ -303,9 +304,9 @@ static const char * const qcom_snps_hsphy_clks[] = {
 	"sleep",
 };
 
-static int qcom_snps_hsphy_probe(struct platform_device *pdev)
+static int qcom_snps_hsphy_probe(struct ulpi *ulpi)
 {
-	struct device *dev = &pdev->dev;
+	struct device *dev = &ulpi->dev;
 	struct phy_provider *provider;
 	struct hsphy_priv *priv;
 	struct phy *phy;
@@ -316,9 +317,7 @@ static int qcom_snps_hsphy_probe(struct platform_device *pdev)
 	if (!priv)
 		return -ENOMEM;
 
-	priv->base = devm_platform_ioremap_resource(pdev, 0);
-	if (IS_ERR(priv->base))
-		return PTR_ERR(priv->base);
+	priv->ulpi = ulpi;
 
 	priv->num_clks = ARRAY_SIZE(qcom_snps_hsphy_clks);
 	priv->clks = devm_kcalloc(dev, priv->num_clks, sizeof(*priv->clks),
@@ -412,14 +411,14 @@ static const struct of_device_id qcom_snps_hsphy_match[] = {
 };
 MODULE_DEVICE_TABLE(of, qcom_snps_hsphy_match);
 
-static struct platform_driver qcom_snps_hsphy_driver = {
+static struct ulpi_driver qcom_snps_hsphy_driver = {
 	.probe = qcom_snps_hsphy_probe,
 	.driver	= {
 		.name = "qcom,usb-hs-28nm-phy",
 		.of_match_table = qcom_snps_hsphy_match,
 	},
 };
-module_platform_driver(qcom_snps_hsphy_driver);
+module_ulpi_driver(qcom_snps_hsphy_driver);
 
 MODULE_DESCRIPTION("Qualcomm 28nm Hi-Speed USB PHY driver");
 MODULE_LICENSE("GPL v2");
