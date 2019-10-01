@@ -107,6 +107,10 @@ extern int __qcom_scm_iommu_secure_ptbl_size(struct device *dev, u32 spare,
 					     size_t *size);
 extern int __qcom_scm_iommu_secure_ptbl_init(struct device *dev, u64 addr,
 					     u32 size, u32 spare);
+#define QCOM_SCM_SVC_SMMU_PROGRAM	0x15
+#define QCOM_SCM_IOMMU_PT_FORMAT	1
+extern int __qcom_scm_iommu_set_pt_format(struct device *dev, u32 sec_id,
+					  u32 ctx_num, u32 pt_fmt);
 extern int __qcom_scm_qsmmu500_wait_safe_toggle(struct device *dev,
 						bool enable);
 #define QCOM_MEM_PROT_ASSIGN_ID	0x16
