@@ -1,0 +1,111 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright 2019 Vladimir Oltean <olteanv@gmail.com>
+ */
+
+#include "pmi8950.dtsi"
+#include "pm8950.dtsi"
+#include "pm8004.dtsi"
+#include <dt-bindings/interrupt-controller/irq.h>
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/gpio-keys.h>
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/input/linux-event-codes.h>
+#include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
+
+/ {
+	aliases {
+		serial0 = &blsp1_uart2;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+	vph_pwr: vph-pwr-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "vph_pwr";
+		regulator-always-on;
+		regulator-boot-on;
+	};
+
+	/* Compensate for hardware-reversed VOL-UP and VOL-DOWN buttons */
+	gpio_keys {
+		compatible = "gpio-keys";
+		input-name = "gpio-keys";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		autorepeat;
+
+		button@0 {
+			label = "Volume Down";
+			linux,code = <KEY_VOLUMEDOWN>;
+			wakeup-source;
+			debounce-interval = <15>;
+			gpios = <&tlmm 113 GPIO_ACTIVE_LOW>;
+		};
+	};
+};
+
+&blsp_dma {
+	status = "ok";
+};
+
+&blsp2_dma {
+	status = "ok";
+};
+
+&blsp1_uart2 {
+	status = "ok";
+};
+
+&blsp_i2c8 {
+	status = "ok";
+};
+
+&pm8004_lsid5 {
+	status = "ok";
+};
+
+&pm8004_spmi_regulators {
+	vdd_s2-supply = <&vph_pwr>;
+	vdd_s5-supply = <&vph_pwr>;
+
+	/* Cluster 1 supply */
+	pm8004_s2: s2 {
+		/* Set APC1 always-on and raise min voltage to .95V
+		 * until a proper CPU scaling solution lands
+		 */
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-name = "vdd_apc1";
+		regulator-min-microvolt = <950000>; /* 500000 */
+		regulator-max-microvolt = <1165000>;
+	};
+
+	pm8004_s5: s5 {
+		/* Put GFX VDD up at boot until a proper solution lands */
+		regulator-boot-on;
+
+		regulator-name = "vdd_gfx";
+		regulator-min-microvolt = <950000>;
+		regulator-max-microvolt = <1165000>;
+		regulator-enable-ramp-delay = <500>;
+	};
+};
+
+&pm8950_spmi_regulators {
+	vdd_s5-supply = <&vph_pwr>;
+
+	/* Cluster 0 supply */
+	pm8950_spmi_s5: s5 {
+		/* Set APC0 always-on and raise min voltage to .95V
+		 * until a proper CPU scaling solution lands
+		 */
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-name = "vdd_apc0";
+		regulator-min-microvolt = <950000>; /* 790000 */
+		regulator-max-microvolt = <1165000>;
+	};
+};
