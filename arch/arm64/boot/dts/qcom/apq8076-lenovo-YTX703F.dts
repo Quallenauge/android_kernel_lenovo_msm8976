@@ -1,0 +1,15 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright 2019 Vladimir Oltean <olteanv@gmail.com>
+ */
+
+/dts-v1/;
+
+#include "apq8076.dtsi"
+#include "msm8976-lenovo-YTX703.dtsi"
+
+/ {
+	model = "Qualcomm Technologies, Inc. APQ 8076v1.1 MTP";
+	compatible = "qcom,apq8076-mtp", "qcom,apq8076", "qcom,mtp";
+	qcom,board-id = <8 0>;
+};
