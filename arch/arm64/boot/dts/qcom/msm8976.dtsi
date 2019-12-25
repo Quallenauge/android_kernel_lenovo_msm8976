@@ -73,11 +73,12 @@
 			reg = <0x0 0x8c200000 0x0 0x1800000>;
 			no-map;
 		};
-
+#if 0
 		venus_mem: memory@8da00000 {
 			reg = <0x0 0x8DA00000 0x0 0x2600000>;
 			no-map;
 		};
+#endif
 
 		tz_apps: memory@8dd00000 {
 			reg = <0x0 0x8dd00000 0x0 0x1400000>;
