@@ -48,11 +48,11 @@
 };
 
 &blsp_dma {
-	status = "ok";
+	status = "disabled";
 };
 
 &blsp2_dma {
-	status = "ok";
+	status = "disabled";
 };
 
 &blsp1_uart2 {
