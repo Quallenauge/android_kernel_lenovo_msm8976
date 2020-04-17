@@ -2967,11 +2967,10 @@ void lim_handle_ecsa_req(tpAniSirGlobal mac_ctx, struct ecsa_frame_params *ecsa_
    session->gLimChannelSwitch.secondarySubBand = PHY_SINGLE_CHANNEL_CENTERED;
    session->gLimWiderBWChannelSwitch.newChanWidth = 0;
 
-   ch_offset =
-       lim_get_channel_width_from_opclass(mac_ctx->scan.countryCodeCurrent,
-                                          ecsa_req->new_channel,
-                                          sta_ds->mlmStaContext.vhtCapability,
-                                          ecsa_req->op_class);
+   ch_offset = limGetOffChMaxBwOffsetFromChannel(
+                       mac_ctx->scan.countryCodeCurrent,
+                       ecsa_req->new_channel,
+                       sta_ds->mlmStaContext.vhtCapability);
    if (ch_offset == BW80) {
        session->gLimWiderBWChannelSwitch.newChanWidth =
                                   WNI_CFG_VHT_CHANNEL_WIDTH_80MHZ;
@@ -8722,7 +8721,6 @@ eHalStatus limAssocRspTxCompleteCnf(tpAniSirGlobal pMac, void *pData)
                 pNode, &pNext );
         pNode = pNext;
         pNext = NULL;
-        tmp_tx_context = NULL;
       }
       else
       {
@@ -8732,7 +8730,7 @@ eHalStatus limAssocRspTxCompleteCnf(tpAniSirGlobal pMac, void *pData)
       }
     }
 
-    if (!pNode) {
+    if (!tmp_tx_context) {
         limLog(pMac, LOGE, FL("context is NULL"));
         return eHAL_STATUS_SUCCESS;
     }
@@ -8836,7 +8834,7 @@ tANI_U8 lim_compute_ext_cap_ie_length (tDot11fIEExtCap *ext_cap) {
  *
  * Update the capability info in Assoc/Reassoc request frames and reset
  * the spectrum management, short preamble, immediate block ack bits
- * and rrm bit mask if the BSS doesnot support it
+ * if the BSS doesnot support it
  *
  * Return: None
  */
@@ -8856,12 +8854,6 @@ void lim_update_caps_info_for_bss(tpAniSirGlobal mac_ctx,
     if (!(bss_caps & LIM_IMMEDIATE_BLOCK_ACK_MASK)) {
           *caps &= (~LIM_IMMEDIATE_BLOCK_ACK_MASK);
           limLog(mac_ctx, LOG1, FL("Clearing Immed Blk Ack:no AP support"));
-    }
-
-    if (!(bss_caps & LIM_RRM_BIT_MASK)) {
-          *caps &= (~LIM_RRM_BIT_MASK);
-          limLog(mac_ctx, LOG1,
-                 FL("Clearing radio measurement :no AP support"));
     }
 }
 #ifdef SAP_AUTH_OFFLOAD
