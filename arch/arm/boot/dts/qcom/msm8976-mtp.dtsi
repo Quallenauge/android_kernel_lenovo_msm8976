@@ -223,6 +223,7 @@
 	status = "ok";
 };
 
+/*
 &sdhc_3 {
 	vdd-supply = <&pm8950_l5>;
 	qcom,vdd-voltage-level = <1800000 1800000>;
@@ -241,6 +242,7 @@
 
 	status = "disabled";
 };
+*/
 
 /{
 	mtp_batterydata: qcom,battery-data {
