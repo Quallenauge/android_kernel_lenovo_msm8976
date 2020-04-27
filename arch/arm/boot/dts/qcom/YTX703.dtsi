@@ -321,9 +321,9 @@
  * - msm-pmi8950.dtsi
  * - msm8976-mtp.dtsi
  */
-&pmi8950_haptic {
-	qcom,actuator-type = "erm";
-	qcom,vmax-mv = <2200>;
+&pmi_haptic	{
+	qcom,actuator-type	= "erm";
+	qcom,vmax-mv =	<2200>;
 };
 /*
  * Charger
