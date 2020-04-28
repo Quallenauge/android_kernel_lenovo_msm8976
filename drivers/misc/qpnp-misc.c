@@ -271,7 +271,7 @@ static ssize_t twm_exit_show(struct class *c,
 	rc = qpnp_read_byte(mdev->spmi,
 			mdev->resource->start + MISC_SPARE_1, &val);
 	if (rc < 0) {
-		pr_err("Failed to read TWM enable (misc_spare_1) rc=%d\n", rc);
+		pr_err("Failed to read TWM enable (misc_spare_1) rc=%zd\n", rc);
 		return rc;
 	}
 
