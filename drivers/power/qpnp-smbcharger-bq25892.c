@@ -38,7 +38,7 @@
 #include <linux/of_batterydata.h>
 #include <linux/msm_bcl.h>
 #include <linux/ktime.h>
-#include "pmic-voter.h"
+#include <linux/pmic-voter.h>
 #include "bq25892-charger.h"
 #include <linux/timer.h>
 #include <linux/alarmtimer.h>
@@ -384,65 +384,59 @@ enum wake_reason_to_parallel {
 	PM_TO_PARALLEL_TIMER_SOC=BIT(1)
 };
 
-enum fcc_voters {
-	ESR_PULSE_FCC_VOTER,
-	BATT_TYPE_FCC_VOTER,
-	RESTRICTED_CHG_FCC_VOTER,
-	NUM_FCC_VOTER,
-};
+/* fcc_voters */
+#define ESR_PULSE_FCC_VOTER	"ESR_PULSE_FCC_VOTER"
+#define BATT_TYPE_FCC_VOTER	"BATT_TYPE_FCC_VOTER"
+#define RESTRICTED_CHG_FCC_VOTER	"RESTRICTED_CHG_FCC_VOTER"
 
-enum icl_voters {
-	PSY_ICL_VOTER,
-	THERMAL_ICL_VOTER,
-	HVDCP_ICL_VOTER,
-	USER_ICL_VOTER,
-	WEAK_CHARGER_ICL_VOTER,
-	SW_AICL_ICL_VOTER,
-	NUM_ICL_VOTER,
-};
+/* ICL VOTERS */
+#define PSY_ICL_VOTER		"PSY_ICL_VOTER"
+#define THERMAL_ICL_VOTER	"THERMAL_ICL_VOTER"
+#define HVDCP_ICL_VOTER		"HVDCP_ICL_VOTER"
+#define USER_ICL_VOTER		"USER_ICL_VOTER"
+#define WEAK_CHARGER_ICL_VOTER	"WEAK_CHARGER_ICL_VOTER"
+#define SW_AICL_ICL_VOTER	"SW_AICL_ICL_VOTER"
+#define CHG_SUSPEND_WORKAROUND_ICL_VOTER "CHG_SUSPEND_WORKAROUND_ICL_VOTER"
+#define	SHUTDOWN_WORKAROUND_ICL_VOTER "SHUTDOWN_WORKAROUND_ICL_VOTER"
+#define	PARALLEL_ICL_VOTER	"PARALLEL_ICL_VOTER"
 
-enum enable_voters {
-	/* userspace has suspended charging altogether */
-	USER_EN_VOTER,
-	/*
-	 * this specific path has been suspended through the power supply
-	 * framework
-	 */
-	POWER_SUPPLY_EN_VOTER,
-	/*
-	 * the usb driver has suspended this path by setting a current limit
-	 * of < 2MA
-	 */
-	USB_EN_VOTER,
-	/*
-	 * when a wireless charger comes online,
-	 * the dc path is suspended for a second
-	 */
-	WIRELESS_EN_VOTER,
-	/*
-	 * the thermal daemon can suspend a charge path when the system
-	 * temperature levels rise
-	 */
-	THERMAL_EN_VOTER,
-	/*
-	 * an external OTG supply is being used, suspend charge path so the
-	 * charger does not accidentally try to charge from the external supply.
-	 */
-	OTG_EN_VOTER,
-	/*
-	 * the charger is very weak, do not draw any current from it
-	 */
-	WEAK_CHARGER_EN_VOTER,
-	NUM_EN_VOTERS,
-};
+/* USB SUSPEND VOTERS */
+/* userspace has suspended charging altogether */
+#define USER_EN_VOTER		"USER_EN_VOTER"
+/*
+ * this specific path has been suspended through the power supply
+ * framework
+ */
+#define POWER_SUPPLY_EN_VOTER	"POWER_SUPPLY_EN_VOTER"
+/*
+ * the usb driver has suspended this path by setting a current limit
+ * of < 2MA
+ */
+#define USB_EN_VOTER		"USB_EN_VOTER"
+/*
+ * the thermal daemon can suspend a charge path when the system
+ * temperature levels rise
+ */
+#define THERMAL_EN_VOTER	"THERMAL_EN_VOTER"
+/*
+ * an external OTG supply is being used, suspend charge path so the
+ * charger does not accidentally try to charge from the external supply.
+ */
+#define OTG_EN_VOTER		"OTG_EN_VOTER"
+/*
+ * the charger is very weak, do not draw any current from it
+ */
+#define WEAK_CHARGER_EN_VOTER	"WEAK_CHARGER_EN_VOTER"
+/*
+ * fake battery voter, if battery id-resistance around 7.5 Kohm
+ */
+#define FAKE_BATTERY_EN_VOTER	"FAKE_BATTERY_EN_VOTER"
 
-enum battchg_enable_voters {
+/* battchg_enable_voters */
 	/* userspace has disabled battery charging */
-	BATTCHG_USER_EN_VOTER,
+#define BATTCHG_USER_EN_VOTER	"BATTCHG_USER_EN_VOTER"
 	/* battery charging disabled while loading battery profiles */
-	BATTCHG_UNKNOWN_BATTERY_EN_VOTER,
-	NUM_BATTCHG_EN_VOTERS,
-};
+#define BATTCHG_UNKNOWN_BATTERY_EN_VOTER "BATTCHG_UNKNOWN_BATTERY_EN_VOTER"
 
 #ifndef CHARGING_DEBUG
 static int smbchg_debug_mask;
@@ -2535,12 +2529,13 @@ static void smbchg_parallel_usb_check_ok(struct smbchg_chip *chip)
 	schedule_delayed_work(&chip->parallel_en_work, 0);
 }
 
-static int charging_parallel_suspend_vote_cb(struct device *dev, int suspend,
-						int client, int last_suspend,
-						int last_client)
+static int charging_parallel_suspend_vote_cb(struct votable *votable,
+										void *data,
+										int suspend,
+										const char *client)
 {
 	int rc = -1;
-	struct smbchg_chip *chip = dev_get_drvdata(dev);
+	struct smbchg_chip *chip = data;
 	struct power_supply *parallel_psy = get_parallel_psy(chip);
 	union power_supply_propval pval = {0, };
 
@@ -2561,12 +2556,13 @@ static int charging_parallel_suspend_vote_cb(struct device *dev, int suspend,
 	return rc;
 }
 
-static int charging_suspend_vote_cb(struct device *dev, int suspend,
-						int client, int last_suspend,
-						int last_client)
+static int charging_suspend_vote_cb(struct votable *votable,
+								void *data,
+								int suspend,
+								const char *client)
 {
 	int rc;
-	struct smbchg_chip *chip = dev_get_drvdata(dev);
+	struct smbchg_chip *chip = data;
 	pr_smb(PR_STATUS, "suspend %d\n", suspend);
 	rc = smbchg_charging_en(chip, !suspend);
 	if (rc < 0) {
@@ -2578,12 +2574,13 @@ static int charging_suspend_vote_cb(struct device *dev, int suspend,
 	return rc;
 }
 
-static int usb_suspend_vote_cb(struct device *dev, int suspend,
-						int client, int last_suspend,
-						int last_client)
+static int usb_suspend_vote_cb(struct votable *votable,
+						void *data,
+						int suspend,
+						const char *client)
 {
 	int rc;
-	struct smbchg_chip *chip = dev_get_drvdata(dev);
+	struct smbchg_chip *chip = data;
 	pr_smb(PR_STATUS, "suspend %d\n", suspend);
 	rc = smbchg_usb_suspend(chip, suspend);
 	if (rc < 0)
@@ -2596,12 +2593,13 @@ static int usb_suspend_vote_cb(struct device *dev, int suspend,
 	return rc;
 }
 
-static int dc_suspend_vote_cb(struct device *dev, int suspend,
-						int client, int last_suspend,
-						int last_client)
+static int dc_suspend_vote_cb(struct votable *votable,
+						void *data,
+						int suspend,
+						const char *client)
 {
 	int rc;
-	struct smbchg_chip *chip = dev_get_drvdata(dev);
+	struct smbchg_chip *chip = data;
 	pr_smb(PR_STATUS, "suspend %d\n", suspend);
 	rc = smbchg_dc_suspend(chip, suspend);
 	if (rc < 0)
@@ -2613,13 +2611,12 @@ static int dc_suspend_vote_cb(struct device *dev, int suspend,
 	return rc;
 }
 
-static int set_fastchg_current_vote_cb(struct device *dev,
+static int set_fastchg_current_vote_cb(struct votable *votable,
+						void *data,
 						int fcc_ma,
-						int client,
-						int last_fcc_ma,
-						int last_client)
+						const char *client)
 {
-	struct smbchg_chip *chip = dev_get_drvdata(dev);
+	struct smbchg_chip *chip = data;
 	int rc;
 	pr_smb(PR_STATUS, "fcc_ma %d\n", fcc_ma);
 	if (chip->parallel.current_max_ma == 0) {
@@ -2903,13 +2900,12 @@ DEFINE_SIMPLE_ATTRIBUTE(force_dcin_icl_ops, NULL,
  * set the dc charge path's maximum allowed current draw
  * that may be limited by the system's thermal level
  */
-static int set_dc_current_limit_vote_cb(struct device *dev,
-						int icl_ma,
-						int client,
-						int last_icl_ma,
-						int last_client)
+static int set_dc_current_limit_vote_cb(struct votable *votable,
+									void *data,
+									int icl_ma,
+									const char *client)
 {
-	struct smbchg_chip *chip = dev_get_drvdata(dev);
+	struct smbchg_chip *chip = data;
 
 	return smbchg_set_dc_current_max(chip, icl_ma);
 }
@@ -2918,13 +2914,12 @@ static int set_dc_current_limit_vote_cb(struct device *dev,
  * set the usb charge path's maximum allowed current draw
  * that may be limited by the system's thermal level
  */
-static int set_usb_current_limit_vote_cb(struct device *dev,
-						int icl_ma,
-						int client,
-						int last_icl_ma,
-						int last_client)
+static int set_usb_current_limit_vote_cb(struct votable *votable,
+									void *data,
+									int icl_ma,
+									const char *client)
 {
-	struct smbchg_chip *chip = dev_get_drvdata(dev);
+	struct smbchg_chip *chip = data;
 
 #ifndef DISABLE_CODE_FOR_BQ25892
 	int rc, aicl_ma, effective_id;
@@ -2965,13 +2960,12 @@ static int set_usb_current_limit_vote_cb(struct device *dev,
  * set the usb charge path's maximum allowed current draw
  * that may be limited by the system's thermal level
  */
-static int set_usb_parallel_current_limit_vote_cb(struct device *dev,
-						int icl_ma,
-						int client,
-						int last_icl_ma,
-						int last_client)
+static int set_usb_parallel_current_limit_vote_cb(struct votable *votable,
+											void *data,
+											int icl_ma,
+											const char *client)
 {
-	struct smbchg_chip *chip = dev_get_drvdata(dev);
+	struct smbchg_chip *chip = data;
 	struct power_supply *parallel_psy = get_parallel_psy(chip);
 	pr_smb(PR_STATUS, "mzy >>>> icl_ma = %d\n", icl_ma);
 	if(parallel_psy){
@@ -2995,13 +2989,12 @@ static void set_usb_total_current_limit(struct smbchg_chip *chip)
 }
 
 
-static int set_usb_total_current_limit_vote_cb(struct device *dev,
-						int icl_ma,
-						int client,
-						int last_icl_ma,
-						int last_client)
+static int set_usb_total_current_limit_vote_cb(struct votable *votable,
+										void *data,
+										int icl_ma,
+										const char *client)
 {
-	struct smbchg_chip *chip = dev_get_drvdata(dev);
+	struct smbchg_chip *chip = data;
 	pr_smb(PR_STATUS, "mzy >>>> icl_ma = %d\n", icl_ma);
 	chip->usb_total_max_current_ma = icl_ma;
 	if(chip->parallel_charger_detected){
@@ -6155,11 +6148,11 @@ static int fake_insertion_removal(struct smbchg_chip *chip, bool insertion)
 	bool usbin_uv;
 
 	if (insertion) {
-		INIT_COMPLETION(chip->src_det_raised);
-		INIT_COMPLETION(chip->usbin_uv_lowered);
+		reinit_completion(&chip->src_det_raised);
+		reinit_completion(&chip->usbin_uv_lowered);
 	} else {
-		INIT_COMPLETION(chip->src_det_lowered);
-		INIT_COMPLETION(chip->usbin_uv_raised);
+		reinit_completion(&chip->src_det_lowered);
+		reinit_completion(&chip->usbin_uv_raised);
 	}
 
 	/* ensure that usbin uv real time status is in the right state */
@@ -6445,10 +6438,10 @@ static int rerun_apsd(struct smbchg_chip *chip)
 {
 	int rc;
 
-	INIT_COMPLETION(chip->src_det_raised);
-	INIT_COMPLETION(chip->usbin_uv_lowered);
-	INIT_COMPLETION(chip->src_det_lowered);
-	INIT_COMPLETION(chip->usbin_uv_raised);
+	reinit_completion(&chip->src_det_raised);
+	reinit_completion(&chip->usbin_uv_lowered);
+	reinit_completion(&chip->src_det_lowered);
+	reinit_completion(&chip->usbin_uv_raised);
 
 	/* re-run APSD */
 	rc = smbchg_masked_write(chip, chip->usb_chgpth_base + USB_CMD_APSD,
@@ -9118,66 +9111,57 @@ static int smbchg_probe(struct spmi_device *spmi)
 		return -ENOMEM;
 	}
 
-	chip->fcc_votable = create_votable(&spmi->dev,
-			"SMBCHG: fcc",
-			VOTE_MIN, NUM_FCC_VOTER, 2000,
-			set_fastchg_current_vote_cb);
+	chip->fcc_votable = create_votable("SMBCHG: fcc",
+			VOTE_MIN,
+			set_fastchg_current_vote_cb, chip);
 	if (IS_ERR(chip->fcc_votable))
 		return PTR_ERR(chip->fcc_votable);
 
-	chip->usb_icl_votable = create_votable(&spmi->dev,
-			"SMBCHG: usb_icl",
-			VOTE_MIN, NUM_ICL_VOTER, 3000,
-			set_usb_current_limit_vote_cb);
+	chip->usb_icl_votable = create_votable("SMBCHG: usb_icl",
+			VOTE_MIN,
+			set_usb_current_limit_vote_cb, chip);
 	if (IS_ERR(chip->usb_icl_votable))
 		return PTR_ERR(chip->usb_icl_votable);
 
-	chip->usb_icl_parallel_votable = create_votable(&spmi->dev,
-			"SMBCHG: usb_icl_parallel",
-			VOTE_MIN, NUM_ICL_VOTER, 3000,
-			set_usb_parallel_current_limit_vote_cb);
+	chip->usb_icl_parallel_votable = create_votable("SMBCHG: usb_icl_parallel",
+			VOTE_MIN,
+			set_usb_parallel_current_limit_vote_cb, chip);
 	if (IS_ERR(chip->usb_icl_parallel_votable))
 		return PTR_ERR(chip->usb_icl_parallel_votable);
 
-	chip->usb_icl_total_votable = create_votable(&spmi->dev,
-			"SMBCHG: usb_icl_total",
-			VOTE_MIN, NUM_ICL_VOTER, 3000,
-			set_usb_total_current_limit_vote_cb);
+	chip->usb_icl_total_votable = create_votable("SMBCHG: usb_icl_total",
+			VOTE_MIN,
+			set_usb_total_current_limit_vote_cb, chip);
 	if (IS_ERR(chip->usb_icl_total_votable))
 		return PTR_ERR(chip->usb_icl_total_votable);
 
-	chip->battchg_parallel_suspend_votable = create_votable(&spmi->dev,
-			"SMBCHG: battchg_parallel_suspend",
-			VOTE_SET_ANY, NUM_BATTCHG_EN_VOTERS, 0,
-			charging_parallel_suspend_vote_cb);
+	chip->battchg_parallel_suspend_votable = create_votable("SMBCHG: battchg_parallel_suspend",
+			VOTE_SET_ANY,
+			charging_parallel_suspend_vote_cb, chip);
 	if (IS_ERR(chip->battchg_parallel_suspend_votable))
 		return PTR_ERR(chip->battchg_parallel_suspend_votable);
 
-	chip->dc_icl_votable = create_votable(&spmi->dev,
-			"SMBCHG: dcl_icl",
-			VOTE_MIN, NUM_ICL_VOTER, 3000,
-			set_dc_current_limit_vote_cb);
+	chip->dc_icl_votable = create_votable("SMBCHG: dcl_icl",
+			VOTE_MIN,
+			set_dc_current_limit_vote_cb, chip);
 	if (IS_ERR(chip->dc_icl_votable))
 		return PTR_ERR(chip->dc_icl_votable);
 
-	chip->usb_suspend_votable = create_votable(&spmi->dev,
-			"SMBCHG: usb_suspend",
-			VOTE_SET_ANY, NUM_EN_VOTERS, 0,
-			usb_suspend_vote_cb);
+	chip->usb_suspend_votable = create_votable("SMBCHG: usb_suspend",
+			VOTE_SET_ANY,
+			usb_suspend_vote_cb, chip);
 	if (IS_ERR(chip->usb_suspend_votable))
 		return PTR_ERR(chip->usb_suspend_votable);
 
-	chip->dc_suspend_votable = create_votable(&spmi->dev,
-			"SMBCHG: dc_suspend",
-			VOTE_SET_ANY, NUM_EN_VOTERS, 0,
-			dc_suspend_vote_cb);
+	chip->dc_suspend_votable = create_votable("SMBCHG: dc_suspend",
+			VOTE_SET_ANY,
+			dc_suspend_vote_cb, chip);
 	if (IS_ERR(chip->dc_suspend_votable))
 		return PTR_ERR(chip->dc_suspend_votable);
 
-	chip->battchg_suspend_votable = create_votable(&spmi->dev,
-			"SMBCHG: battchg_suspend",
-			VOTE_SET_ANY, NUM_BATTCHG_EN_VOTERS, 0,
-			charging_suspend_vote_cb);
+	chip->battchg_suspend_votable = create_votable("SMBCHG: battchg_suspend",
+			VOTE_SET_ANY,
+			charging_suspend_vote_cb, chip);
 	if (IS_ERR(chip->battchg_suspend_votable))
 		return PTR_ERR(chip->battchg_suspend_votable);
 
