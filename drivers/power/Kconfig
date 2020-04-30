@@ -529,7 +529,7 @@ config QPNP_SMBCHARGER
 
 config QPNP_SMBCHARGER_BQ25892
 	tristate "Customized QPNP SMB Charger driver for TI BQ25892"
-	depends on SPMI
+	depends on SPMI || MSM_SPMI
 	depends on OF_SPMI
 	help
 	  Say Y here to enable the dual path switch mode battery charger which
