@@ -89,7 +89,7 @@
 		charger_int_default: charger_int_default {
 			mux {
 				pins = "gpio68";
-				function = "us_emitter";
+				function = "qdss_cti_trig_out_a1";
 			};
 			config {
 				pins = "gpio68";
