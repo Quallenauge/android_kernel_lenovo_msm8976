@@ -32,17 +32,6 @@
 			linux,code = <114>; /* KEY_VOLUMEDOWN */
 		};
 	};
-	qcom,mdss_mdp@1a00000 {
-		/delete-property/ qcom,mdss-ppb-off; //  = <0x00000420>;
-		qcom,mdss-cdm-off = <0x0007A200>;
-		qcom,mdss-ppb-ctl-off = <0x00000420>;
-		qcom,mdss-ppb-cfg-off = <0x00000424>; // qcom,mdss-ppb-ctl-off + 4
-
-		qcom,mdss-has-pingpong-split; // formaly known as qcom,mdss-has-dst-split;
-		/delete-property/ qcom,mdss-has-source-split;
-		/delete-property/ qcom,mdss-has-separate-rotator;
-	};
-
 	qcom,wdt@b017000 {
 			qcom,bark-time = <48000>;
 	};
@@ -118,15 +107,6 @@
  * - Overrides dsi-panel-nt35597-dualmipi-wqxga-video.dtsi
  */
 &dsi_dual_nt35597_video {
-	qcom,mdss-dsi-min-refresh-rate = <53>;
-	qcom,mdss-dsi-max-refresh-rate = <60>;
-	qcom,panel-supply-entries = <&dsi_panel_pwr_supply>;
-	qcom,mdss-dsi-tx-eot-append;
-	qcom,mdss-dsi-bl-min-level = <1>;
-	qcom,mdss-dsi-bl-max-level = <4095>;
-	/delete-property/ qcom,mdss-dsi-pan-enable-dynamic-fps;
-	// /delete-property/ qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode_hfp";
-	qcom,mdss-dsi-mode-sel-gpio-state = "high"; // formerly known as qcom,mdss-dsi-mode-sel-gpio-state = "dsc_mode";
 	qcom,config-select = <&dsi_dual_nt35597_video_config1>;
 	qcom,mdss-dsi-post-init-delay = <0x1>;
 
