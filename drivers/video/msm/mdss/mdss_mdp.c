@@ -1327,7 +1327,7 @@ int mdss_iommu_ctrl(int enable)
 		 * delay iommu attach until continous splash screen has
 		 * finished handoff, as it may still be working with phys addr
 		 */
-		if (mdata->iommu_ref_cnt == 0) {
+		if (!mdata->iommu_attached && !mdata->handoff_pending) {
 			mdss_bus_rt_bw_vote(true);
 			if (mdss_has_quirk(mdata, MDSS_QUIRK_MIN_BUS_VOTE))
 				mdss_bus_scale_set_quota(MDSS_HW_RT,
