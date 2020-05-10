@@ -349,6 +349,7 @@
 	mdss_rotator: qcom,mdss_rotator {
 		compatible = "qcom,mdss_rotator";
 		qcom,mdss-wb-count = <1>;
+		qcom,mdss-has-ubwc;
 		qcom,mdss-has-downscale;
 		/* Bus Scale Settings */
 		qcom,msm-bus,name = "mdss_rotator";
