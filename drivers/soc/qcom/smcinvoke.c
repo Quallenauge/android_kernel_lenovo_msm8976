@@ -352,6 +352,7 @@ static int prepare_send_scm_msg(const uint8_t *in_buf, size_t in_buf_len,
 
 	if (of_machine_is_compatible("qcom,msm8996") ||
 	    of_machine_is_compatible("qcom,msm8956") ||
+	    of_machine_is_compatible("qcom,msm8976") ||
 	    of_machine_is_compatible("qcom,msm8939")) {
 		inbuf_sz = in_buf_len;
 		outbuf_sz = out_buf_len;
