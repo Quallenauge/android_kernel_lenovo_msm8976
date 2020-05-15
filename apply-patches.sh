@@ -29,5 +29,18 @@ pwclient git-am -3 -s -p kernel 11221037 # [v2,5/5] arm64: dts: qcom: Add Sony X
 pwclient git-am -3 -s -p ozlabs 1176892 # [v2,1/2] clk: qcom: Add MSM8976/56 Global Clock Controller (GCC) driver
 pwclient git-am -3 -s -p ozlabs 1176891 # [v2,2/2] dt-bindings: clock: Document MSM8976 gcc compatible (needs fixup because qcom,gcc.txt was converted to qcom,gcc.yaml).
 
+# [0/2] RPM clocks for MSM8976/56
+# https://patchwork.kernel.org/cover/11221067/
+pwclient git-am -3 -s -p kernel 11221071 # [1/2] clk: qcom: smd: Add support for MSM8976 rpm clocks
+pwclient git-am -3 -s -p kernel 11221075 # [2/2] dt-bindings: clock: rpmcc: Document msm8976 compatible
+
+# [0/5] Add support for PM8950/PMI8950/PM8004 regulators
+# https://patchwork.kernel.org/cover/11155385/
+pwclient git-am -3 -s -p kernel 11155387 # [1/5] qcom: spmi-regulator: Add support for ULT LV_P50 and ULT P300
+pwclient git-am -3 -s -p kernel 11155393 # [2/5] regulator: qcom_spmi: Add PM8950 SPMI regulator
+pwclient git-am -3 -s -p kernel 11155389 # [3/5] regulator: qcom_smd: Add PM8950 regulators
+pwclient git-am -3 -s -p kernel 11155391 # [4/5] mfd: qcom-spmi-pmic: Add support for PM/PMI8950
+pwclient git-am -3 -s -p kernel 11155395 # [5/5] regulator: qcom_spmi: Add support for PM8004 regulators
+
 # https://patchwork.kernel.org/patch/11305491/
 pwclient git-am -3 -s -p kernel 11305491 # arm64: Add qcom Kconfig fragment
