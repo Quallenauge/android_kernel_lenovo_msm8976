@@ -48,10 +48,16 @@
 };
 
 &blsp_dma {
+	num-channels = <12>;
+	qcom,num-ees = <4>;
+	qcom,controlled-remotely;
 	status = "ok";
 };
 
 &blsp2_dma {
+	num-channels = <12>;
+	qcom,num-ees = <4>;
+	qcom,controlled-remotely;
 	status = "ok";
 };
 
