@@ -461,6 +461,13 @@
 		ranges = <0 0 0 0xffffffff>;
 		compatible = "simple-bus";
 
+		restart@4ab000 {
+			compatible = "qcom,pshold";
+			reg = <0x4ab000 0x4>,
+				<0x193d100 0x4>;
+			reg-names = "pshold-base", "tcsr-boot-misc-detect";
+		};
+
 		rng@22000 {
 			compatible = "qcom,prng";
 			reg = <0x00022000 0x140>;
