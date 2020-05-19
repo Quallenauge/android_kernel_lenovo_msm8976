@@ -104,7 +104,7 @@ static int qcom_usb_hsic_phy_probe(struct ulpi *ulpi)
 	struct qcom_usb_hsic_phy *uphy;
 	struct phy_provider *p;
 	struct clk *clk;
-
+	printk("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	uphy = devm_kzalloc(&ulpi->dev, sizeof(*uphy), GFP_KERNEL);
 	if (!uphy)
 		return -ENOMEM;
@@ -134,6 +134,7 @@ static int qcom_usb_hsic_phy_probe(struct ulpi *ulpi)
 	phy_set_drvdata(uphy->phy, uphy);
 
 	p = devm_of_phy_provider_register(&ulpi->dev, of_phy_simple_xlate);
+	printk("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	return PTR_ERR_OR_ZERO(p);
 }
 

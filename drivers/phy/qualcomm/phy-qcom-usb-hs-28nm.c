@@ -313,12 +313,13 @@ static int qcom_snps_hsphy_probe(struct ulpi *ulpi)
 	int ret;
 	int i;
 
+	printk("%s:%s:%d Here!\n",__FILE__,__FUNCTION__,__LINE__);
 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;
-
+	printk("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	priv->ulpi = ulpi;
-
+	printk("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	priv->num_clks = ARRAY_SIZE(qcom_snps_hsphy_clks);
 	priv->clks = devm_kcalloc(dev, priv->num_clks, sizeof(*priv->clks),
 				  GFP_KERNEL);
@@ -331,7 +332,7 @@ static int qcom_snps_hsphy_probe(struct ulpi *ulpi)
 	ret = devm_clk_bulk_get(dev, priv->num_clks, priv->clks);
 	if (ret)
 		return ret;
-
+	printk("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	priv->phy_reset = devm_reset_control_get_exclusive(dev, "phy");
 	if (IS_ERR(priv->phy_reset))
 		return PTR_ERR(priv->phy_reset);
@@ -343,14 +344,14 @@ static int qcom_snps_hsphy_probe(struct ulpi *ulpi)
 	priv->vregs[VDD].supply = "vdd";
 	priv->vregs[VDDA_1P8].supply = "vdda1p8";
 	priv->vregs[VDDA_3P3].supply = "vdda3p3";
-
+	printk("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	ret = devm_regulator_bulk_get(dev, VREG_NUM, priv->vregs);
 	if (ret)
 		return ret;
 
 	/* Get device match data */
 	priv->data = device_get_match_data(dev);
-
+	printk("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	phy = devm_phy_create(dev, dev->of_node, &qcom_snps_hsphy_ops);
 	if (IS_ERR(phy))
 		return PTR_ERR(phy);
@@ -368,7 +369,7 @@ static int qcom_snps_hsphy_probe(struct ulpi *ulpi)
 	ret = regulator_set_load(priv->vregs[VDDA_3P3].consumer, 16000);
 	if (ret < 0)
 		goto unset_1p8_load;
-
+	printk("%s:%s:%d Probe done!\n",__FILE__,__FUNCTION__,__LINE__);
 	return 0;
 
 unset_1p8_load:

@@ -53,7 +53,7 @@
 			vbus-gpio = <&tlmm 68 GPIO_ACTIVE_HIGH>;
 			pinctrl-names = "default";
 			pinctrl-0 = <&charger_psel_pin>;
-		};	
+		};
 	};
 };
 
@@ -129,11 +129,21 @@
 
 &otg {
 	status = "ok";
+	phy-names = "usb-phy";
+	phys = <&usb_hs_phy>;
+	dr_mode = "otg";
 	ulpi {
-		phy {
-			extcon = <&usb_vbus>;
+		usb_hs_phy: phy {
+			compatible = "qcom,usb-hs-28nm-8976",
+						 "qcom,usb-hsic-phy";
+			#phy-cells = <0>;
 			v1p8-supply = <&pm8950_l7>;
 			v3p3-supply = <&pm8950_l13>;
+			clocks = <&xo_board>, <&gcc GCC_USB_HS_PHY_CFG_AHB_CLK>, <&gcc GCC_USB2A_PHY_SLEEP_CLK>;
+			clock-names = "ref", "ahb", "sleep";
+			resets = <&gcc RST_QUSB2_PHY_BCR>, <&gcc RST_USB2_HS_PHY_ONLY_BCR>;
+			reset-names = "phy", "por";
+			status = "ok";
 		};
 	};	
 };

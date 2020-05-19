@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0
 /* Copyright (c) 2010, Code Aurora Forum. All rights reserved. */
-
+#define DEBUG
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/pm_runtime.h>
@@ -242,10 +242,13 @@ static int ci_hdrc_msm_probe(struct platform_device *pdev)
 	if (ret)
 		goto err_mux;
 
+	dev_dbg(&pdev->dev, "Try to getting ulpi node\n");
 	ulpi_node = of_get_child_by_name(pdev->dev.of_node, "ulpi");
 	if (ulpi_node) {
+		dev_dbg(&pdev->dev, "Check for compatible string.\n");
 		phy_node = of_get_next_available_child(ulpi_node, NULL);
 		ci->hsic = of_device_is_compatible(phy_node, "qcom,usb-hsic-phy");
+		dev_dbg(&pdev->dev, "ci->hsic %d.\n",ci->hsic);
 		of_node_put(phy_node);
 	}
 	of_node_put(ulpi_node);
@@ -264,7 +267,7 @@ static int ci_hdrc_msm_probe(struct platform_device *pdev)
 	pm_runtime_set_active(&pdev->dev);
 	pm_runtime_no_callbacks(&pdev->dev);
 	pm_runtime_enable(&pdev->dev);
-
+	dev_dbg(&pdev->dev, "ci_hdrc_msm_probe done\n");
 	return 0;
 
 err_mux:
