@@ -45,6 +45,16 @@
 			gpios = <&tlmm 113 GPIO_ACTIVE_LOW>;
 		};
 	};
+	
+	soc {
+		// FIXME: Use extcon device provided by charger driver when available
+		usb_vbus: usb-vbus {
+			compatible = "linux,extcon-usb-gpio";
+			vbus-gpio = <&tlmm 68 GPIO_ACTIVE_HIGH>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&charger_psel_pin>;
+		};	
+	};
 };
 
 &blsp_dma {
@@ -94,6 +104,14 @@
 		drive-strength = <2>; /* mA */
 		bias-pull-up;
 	};
+	
+	charger_psel_pin: charger_psel_pin {
+		pins = "gpio16";
+		function = "gpio";
+		
+		drive-strength = <2>; /* mA */
+		bias-pull-up;
+	};
 };
 
 &blsp_i2c8 {
@@ -107,6 +125,17 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&fusb_int>;
 	};
+};
+
+&otg {
+	status = "ok";
+	ulpi {
+		phy {
+			extcon = <&usb_vbus>;
+			v1p8-supply = <&pm8950_l7>;
+			v3p3-supply = <&pm8950_l13>;
+		};
+	};	
 };
 
 &pm8004_lsid5 {
@@ -153,5 +182,174 @@
 		regulator-name = "vdd_apc0";
 		regulator-min-microvolt = <950000>; /* 790000 */
 		regulator-max-microvolt = <1165000>;
+	};
+};
+
+&rpm_requests {
+	smd_rpm_regulators: pm8950-rpm-regulators {
+		compatible = "qcom,rpm-pm8950-regulators";
+
+		vdd_s1-supply = <&vph_pwr>;
+		vdd_s2-supply = <&vph_pwr>;
+		vdd_s3-supply = <&vph_pwr>;
+		vdd_s4-supply = <&vph_pwr>;
+		vdd_s5-supply = <&vph_pwr>;
+		vdd_s6-supply = <&vph_pwr>;
+		vdd_l1_l19-supply = <&pm8950_s3>;
+		vdd_l2_l23-supply = <&pm8950_s3>;
+		vdd_l3-supply = <&pm8950_s3>;
+		vdd_l4_l5_l6_l7_l16-supply = <&pm8950_s4>;
+		vdd_l8_l11_l12_l17_l22-supply = <&vph_pwr>;
+		vdd_l20-supply = <&pm8950_s4>;
+		vdd_l21-supply = <&pm8950_s4>;
+
+		pm8950_s1: s1 {
+			regulator-min-microvolt = <1000000>;
+			regulator-max-microvolt = <1162500>;
+		};
+
+		pm8950_s3: s3 {
+			regulator-min-microvolt = <1325000>;
+			regulator-max-microvolt = <1325000>;
+			regulator-always-on;
+		};
+
+		pm8950_s4: s4 {
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+			regulator-always-on;
+		};
+
+		pm8950_s5: s5 {};
+
+		pm8950_s6: s6 {};
+
+		pm8950_l1: l1 {
+			regulator-min-microvolt = <900000>;
+			regulator-max-microvolt = <1100000>;
+			regulator-min-microamp = <100>;
+			regulator-max-microamp = <100000>;
+			regulator-enable-ramp-delay = <10>;
+
+			regulator-system-load = <100000>;
+			regulator-allow-set-load;
+		};
+
+		pm8950_l2: l2 {
+			regulator-min-microvolt = <1200000>;
+			regulator-max-microvolt = <1200000>;
+		};
+
+		pm8950_l3: l3 {
+			regulator-min-microvolt = <1000000>;
+			regulator-max-microvolt = <1200000>;
+		};
+
+		pm8950_l5: l5 {
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+
+			regulator-system-load = <300000>;
+			regulator-allow-set-load;
+		};
+
+		pm8950_l6: l6 {
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+			regulator-min-microamp = <100>;
+			regulator-max-microamp = <100000>;
+
+			regulator-system-load = <100000>;
+			regulator-allow-set-load;
+		};
+
+		pm8950_l7: l7 {
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+		};
+
+		pm8950_l8: l8 {
+			regulator-min-microvolt = <2900000>;
+			regulator-max-microvolt = <2900000>;
+
+			regulator-system-load = <550000>;
+			regulator-allow-set-load;
+		};
+
+		pm8950_l9: l9 {
+			regulator-min-microvolt = <2000000>;
+			regulator-max-microvolt = <2400000>;
+		};
+
+		pm8950_l10: l10 {
+			regulator-min-microvolt = <2500000>;
+			regulator-max-microvolt = <2900000>;
+		};
+
+		pm8950_l11: l11 {
+			regulator-min-microvolt = <2950000>;
+			regulator-max-microvolt = <2950000>;
+
+			regulator-system-load = <550000>;
+			regulator-allow-set-load;
+		};
+
+		pm8950_l12: l12 {
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <2950000>;
+
+			regulator-system-load = <22000>;
+			regulator-allow-set-load;
+		};
+
+		pm8950_l13: l13 {
+			regulator-min-microvolt = <3075000>;
+			regulator-max-microvolt = <3075000>;
+		};
+
+		pm8950_l14: l14 {
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <3300000>;
+		};
+
+		pm8950_l15: l15 {
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <3300000>;
+		};
+
+		pm8950_l16: l16 {
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+		};
+
+		pm8950_l17: l17 {
+			regulator-min-microvolt = <2500000>;
+			regulator-max-microvolt = <2900000>;
+		};
+
+		pm8950_l19: l19 {
+			regulator-min-microvolt = <1200000>;
+			regulator-max-microvolt = <1350000>;
+		};
+
+		pm8950_l22: l22 {
+			regulator-min-microvolt = <3000000>;
+			regulator-max-microvolt = <3000000>;
+			regulator-min-microamp = <100>;
+			regulator-max-microamp = <100000>;
+
+			regulator-system-load = <100000>;
+			regulator-allow-set-load;
+		};
+
+		pm8950_l23: l23 {
+			regulator-min-microvolt = <1200000>;
+			regulator-max-microvolt = <1200000>;
+			regulator-min-microamp = <100>;
+			regulator-max-microamp = <100000>;
+
+			regulator-system-load = <100000>;
+			regulator-allow-set-load;
+		};
 	};
 };
