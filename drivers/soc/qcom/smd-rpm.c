@@ -197,6 +197,7 @@ static int qcom_smd_rpm_probe(struct rpmsg_device *rpdev)
 	struct qcom_smd_rpm *rpm;
 	int ret;
 
+	dev_err(&rpdev->dev, "SMD RPM Probe start\n");
 	rpm = devm_kzalloc(&rpdev->dev, sizeof(*rpm), GFP_KERNEL);
 	if (!rpm)
 		return -ENOMEM;
@@ -216,7 +217,7 @@ static int qcom_smd_rpm_probe(struct rpmsg_device *rpdev)
 	ret = of_platform_populate(rpdev->dev.of_node, NULL, NULL, &rpdev->dev);
 	if (ret)
 		platform_device_unregister(rpm->icc);
-
+	dev_err(&rpdev->dev, "SMD RPM Probe finished\n");
 	return ret;
 }
 
@@ -253,12 +254,14 @@ static struct rpmsg_driver qcom_smd_rpm_driver = {
 
 static int __init qcom_smd_rpm_init(void)
 {
+	printk("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	return register_rpmsg_driver(&qcom_smd_rpm_driver);
 }
 arch_initcall(qcom_smd_rpm_init);
 
 static void __exit qcom_smd_rpm_exit(void)
 {
+	printk("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	unregister_rpmsg_driver(&qcom_smd_rpm_driver);
 }
 module_exit(qcom_smd_rpm_exit);

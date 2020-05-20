@@ -449,10 +449,12 @@ static int rpmsg_dev_probe(struct device *dev)
 	struct rpmsg_channel_info chinfo = {};
 	struct rpmsg_endpoint *ept = NULL;
 	int err;
-
+	printk("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	err = dev_pm_domain_attach(dev, true);
-	if (err)
+	if (err){
+		dev_err(dev, "dev_pm_domain_attach failed\n");
 		goto out;
+	}
 
 	if (rpdrv->callback) {
 		strncpy(chinfo.name, rpdev->id.name, RPMSG_NAME_SIZE);
@@ -470,6 +472,7 @@ static int rpmsg_dev_probe(struct device *dev)
 		rpdev->src = ept->addr;
 	}
 
+	dev_err(dev, "Probing...\n", rpdev);
 	err = rpdrv->probe(rpdev);
 	if (err) {
 		dev_err(dev, "%s: failed: %d\n", __func__, err);

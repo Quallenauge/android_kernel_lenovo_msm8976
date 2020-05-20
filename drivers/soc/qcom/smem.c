@@ -903,26 +903,35 @@ static int qcom_smem_probe(struct platform_device *pdev)
 	u32 version;
 	int ret;
 
+	dev_err(&pdev->dev, "Here we go.\n");
 	num_regions = 1;
 	if (of_find_property(pdev->dev.of_node, "qcom,rpm-msg-ram", NULL))
 		num_regions++;
 
 	array_size = num_regions * sizeof(struct smem_region);
 	smem = devm_kzalloc(&pdev->dev, sizeof(*smem) + array_size, GFP_KERNEL);
-	if (!smem)
+	if (!smem){
+		dev_err(&pdev->dev, "Here we go.\n");
 		return -ENOMEM;
+	}
+	dev_err(&pdev->dev, "%s:%s:%d.\n",__FILE__,__FUNCTION__,__LINE__);
 
 	smem->dev = &pdev->dev;
 	smem->num_regions = num_regions;
 
 	ret = qcom_smem_map_memory(smem, &pdev->dev, "memory-region", 0);
-	if (ret)
+	if (ret){
+		dev_err(&pdev->dev, "Error on %s:%s:%d.\n",__FILE__,__FUNCTION__,__LINE__);
 		return ret;
+	}
 
 	if (num_regions > 1 && (ret = qcom_smem_map_memory(smem, &pdev->dev,
-					"qcom,rpm-msg-ram", 1)))
+					"qcom,rpm-msg-ram", 1))){
+		dev_err(&pdev->dev, "Error on %s:%s:%d.\n",__FILE__,__FUNCTION__,__LINE__);
 		return ret;
+	}
 
+	dev_err(&pdev->dev, "%s:%s:%d.\n",__FILE__,__FUNCTION__,__LINE__);
 	header = smem->regions[0].virt_base;
 	if (le32_to_cpu(header->initialized) != 1 ||
 	    le32_to_cpu(header->reserved)) {
@@ -930,6 +939,7 @@ static int qcom_smem_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
+	dev_err(&pdev->dev, "%s:%s:%d.\n",__FILE__,__FUNCTION__,__LINE__);
 	version = qcom_smem_get_sbl_version(smem);
 	switch (version >> 16) {
 	case SMEM_GLOBAL_PART_VERSION:
@@ -945,31 +955,37 @@ static int qcom_smem_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "Unsupported SMEM version 0x%x\n", version);
 		return -EINVAL;
 	}
-
+	dev_err(&pdev->dev, "%s:%s:%d.\n",__FILE__,__FUNCTION__,__LINE__);
 	BUILD_BUG_ON(SMEM_HOST_APPS >= SMEM_HOST_COUNT);
 	ret = qcom_smem_enumerate_partitions(smem, SMEM_HOST_APPS);
-	if (ret < 0 && ret != -ENOENT)
+	if (ret < 0 && ret != -ENOENT){
+		dev_err(&pdev->dev, "%s:%s:%d.\n",__FILE__,__FUNCTION__,__LINE__);
 		return ret;
-
+	}
+	dev_err(&pdev->dev, "%s:%s:%d.\n",__FILE__,__FUNCTION__,__LINE__);
 	hwlock_id = of_hwspin_lock_get_id(pdev->dev.of_node, 0);
 	if (hwlock_id < 0) {
 		if (hwlock_id != -EPROBE_DEFER)
 			dev_err(&pdev->dev, "failed to retrieve hwlock\n");
+		dev_err(&pdev->dev, "%s:%s:%d hwclock not initialized DEFER.\n",__FILE__,__FUNCTION__,__LINE__);
 		return hwlock_id;
 	}
-
+	dev_err(&pdev->dev, "%s:%s:%d.\n",__FILE__,__FUNCTION__,__LINE__);
 	smem->hwlock = hwspin_lock_request_specific(hwlock_id);
-	if (!smem->hwlock)
+	if (!smem->hwlock){
+		dev_err(&pdev->dev, "%s:%s:%d.\n",__FILE__,__FUNCTION__,__LINE__);
 		return -ENXIO;
-
+	}
+	dev_err(&pdev->dev, "%s:%s:%d.\n",__FILE__,__FUNCTION__,__LINE__);
 	__smem = smem;
 
 	smem->socinfo = platform_device_register_data(&pdev->dev, "qcom-socinfo",
 						      PLATFORM_DEVID_NONE, NULL,
 						      0);
 	if (IS_ERR(smem->socinfo))
-		dev_dbg(&pdev->dev, "failed to register socinfo device\n");
+		dev_err(&pdev->dev, "failed to register socinfo device\n");
 
+	dev_err(&pdev->dev, "Probe done.\n");
 	return 0;
 }
 

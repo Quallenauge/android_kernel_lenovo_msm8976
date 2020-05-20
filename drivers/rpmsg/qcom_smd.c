@@ -3,7 +3,7 @@
  * Copyright (c) 2015, Sony Mobile Communications AB.
  * Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
  */
-
+#define DEBUG
 #include <linux/interrupt.h>
 #include <linux/io.h>
 #include <linux/mailbox_client.h>
@@ -1096,7 +1096,7 @@ static int qcom_smd_create_chrdev(struct qcom_smd_edge *edge)
 	qsdev->rpdev.ops = &qcom_smd_device_ops;
 	qsdev->rpdev.dev.parent = &edge->dev;
 	qsdev->rpdev.dev.release = qcom_smd_release_device;
-
+	dev_err(&edge->dev, "%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	return rpmsg_chrdev_register_device(&qsdev->rpdev);
 }
 
@@ -1325,7 +1325,7 @@ static int qcom_smd_parse_edge(struct device *dev,
 	const char *key;
 	int irq;
 	int ret;
-
+	dev_err(dev, "%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	INIT_LIST_HEAD(&edge->channels);
 	spin_lock_init(&edge->channels_lock);
 
@@ -1340,6 +1340,7 @@ static int qcom_smd_parse_edge(struct device *dev,
 		dev_err(dev, "edge missing %s property\n", key);
 		return -EINVAL;
 	}
+	dev_err(dev, "%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	edge->remote_pid = QCOM_SMEM_HOST_ANY;
 	key = "qcom,remote-pid";
@@ -1397,7 +1398,7 @@ static int qcom_smd_parse_edge(struct device *dev,
 	}
 
 	edge->irq = irq;
-
+	dev_err(dev, "%s:%s:%d edge parse end.\n",__FILE__,__FUNCTION__,__LINE__);
 	return 0;
 }
 
@@ -1451,6 +1452,7 @@ struct qcom_smd_edge *qcom_smd_register_edge(struct device *parent,
 	if (!edge)
 		return ERR_PTR(-ENOMEM);
 
+	dev_err(&edge->dev, "%s:%s:%d node->name=%s\n",__FILE__,__FUNCTION__,__LINE__, node->name);
 	init_waitqueue_head(&edge->new_channel_event);
 
 	edge->dev.parent = parent;
@@ -1470,7 +1472,7 @@ struct qcom_smd_edge *qcom_smd_register_edge(struct device *parent,
 		dev_err(&edge->dev, "failed to parse smd edge\n");
 		goto unregister_dev;
 	}
-
+	dev_err(&edge->dev, "%s:%s:%d node->name=%s\n",__FILE__,__FUNCTION__,__LINE__, node->name);
 	ret = qcom_smd_create_chrdev(edge);
 	if (ret) {
 		dev_err(&edge->dev, "failed to register chrdev for edge\n");
@@ -1525,14 +1527,18 @@ static int qcom_smd_probe(struct platform_device *pdev)
 	struct device_node *node;
 	void *p;
 
+	dev_err(&pdev->dev, "%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	/* Wait for smem */
 	p = qcom_smem_get(QCOM_SMEM_HOST_ANY, smem_items[0].alloc_tbl_id, NULL);
-	if (PTR_ERR(p) == -EPROBE_DEFER)
+	if (PTR_ERR(p) == -EPROBE_DEFER){
+		dev_err(&pdev->dev, "%s:%s:%d -EPROBE_DEFER\n",__FILE__,__FUNCTION__,__LINE__);
 		return PTR_ERR(p);
+	}
 
 	for_each_available_child_of_node(pdev->dev.of_node, node)
 		qcom_smd_register_edge(&pdev->dev, node);
 
+	dev_err(&pdev->dev, "%s:%s:%d Probe done\n",__FILE__,__FUNCTION__,__LINE__);
 	return 0;
 }
 

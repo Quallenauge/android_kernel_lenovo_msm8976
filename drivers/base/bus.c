@@ -7,7 +7,7 @@
  * Copyright (c) 2007 Greg Kroah-Hartman <gregkh@suse.de>
  * Copyright (c) 2007 Novell Inc.
  */
-
+#define DEBUG
 #include <linux/async.h>
 #include <linux/device/bus.h>
 #include <linux/device.h>

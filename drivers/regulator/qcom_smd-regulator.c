@@ -3,7 +3,7 @@
  * Copyright (c) 2015, Sony Mobile Communications AB.
  * Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
  */
-
+#define DEBUG
 #include <linux/module.h>
 #include <linux/of.h>
 #include <linux/of_device.h>
@@ -924,6 +924,8 @@ static int rpm_reg_probe(struct platform_device *pdev)
 	struct qcom_rpm_reg *vreg;
 	struct qcom_smd_rpm *rpm;
 
+	dev_err(&pdev->dev, "Probe start\n");
+	dev_dbg(&pdev->dev, "Probe start\n");
 	rpm = dev_get_drvdata(pdev->dev.parent);
 	if (!rpm) {
 		dev_err(&pdev->dev, "unable to retrieve handle to rpm\n");
@@ -962,7 +964,9 @@ static int rpm_reg_probe(struct platform_device *pdev)
 			dev_err(&pdev->dev, "failed to register %s\n", reg->name);
 			return PTR_ERR(rdev);
 		}
+		dev_dbg(&pdev->dev, "reg->name: %s\n", reg->name);
 	}
+	dev_dbg(&pdev->dev, "Probe done\n");
 
 	return 0;
 }

@@ -82,6 +82,7 @@ static int qcom_hwspinlock_probe(struct platform_device *pdev)
 	int ret;
 	int i;
 
+	pr_err("%s:%d\n", __func__,__LINE__);
 	syscon = of_parse_phandle(pdev->dev.of_node, "syscon", 0);
 	if (!syscon) {
 		dev_err(&pdev->dev, "no syscon property\n");
@@ -107,11 +108,13 @@ static int qcom_hwspinlock_probe(struct platform_device *pdev)
 
 	array_size = QCOM_MUTEX_NUM_LOCKS * sizeof(struct hwspinlock);
 	bank = devm_kzalloc(&pdev->dev, sizeof(*bank) + array_size, GFP_KERNEL);
-	if (!bank)
+	if (!bank){
+		pr_err("%s:%d\n", __func__,__LINE__);
 		return -ENOMEM;
+	}
 
 	platform_set_drvdata(pdev, bank);
-
+	pr_err("%s:%d\n", __func__,__LINE__);
 	for (i = 0; i < QCOM_MUTEX_NUM_LOCKS; i++) {
 		field.reg = base + i * stride;
 		field.lsb = 0;
@@ -120,9 +123,11 @@ static int qcom_hwspinlock_probe(struct platform_device *pdev)
 		bank->lock[i].priv = devm_regmap_field_alloc(&pdev->dev,
 							     regmap, field);
 	}
-
-	return devm_hwspin_lock_register(&pdev->dev, bank, &qcom_hwspinlock_ops,
+	pr_err("%s:%d\n", __func__,__LINE__);
+	ret = devm_hwspin_lock_register(&pdev->dev, bank, &qcom_hwspinlock_ops,
 					 0, QCOM_MUTEX_NUM_LOCKS);
+	pr_err("%s:%d ret=%d\n", __func__,__LINE__,ret);
+	return ret;
 }
 
 static struct platform_driver qcom_hwspinlock_driver = {

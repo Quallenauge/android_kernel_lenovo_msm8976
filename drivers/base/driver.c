@@ -177,7 +177,7 @@ int driver_register(struct device_driver *drv)
 		return ret;
 	}
 	kobject_uevent(&drv->p->kobj, KOBJ_ADD);
-
+	pr_err("Driver '%s' was registered with bus_type '%s'\n", drv->name, drv->bus->name);
 	return ret;
 }
 EXPORT_SYMBOL_GPL(driver_register);

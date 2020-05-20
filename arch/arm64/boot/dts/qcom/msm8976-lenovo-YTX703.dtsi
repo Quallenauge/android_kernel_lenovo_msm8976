@@ -276,6 +276,8 @@
 		pm8950_l7: l7 {
 			regulator-min-microvolt = <1800000>;
 			regulator-max-microvolt = <1800000>;
+			qcom,init-voltage = <1800000>;
+			status = "okay";
 		};
 
 		pm8950_l8: l8 {
