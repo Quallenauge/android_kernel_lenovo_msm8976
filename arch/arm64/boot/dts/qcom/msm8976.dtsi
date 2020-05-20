@@ -366,6 +366,12 @@
 		};
 	};
 
+	tcsr_mutex: hwlock {
+		compatible = "qcom,tcsr-mutex";
+		syscon = <&tcsr_mutex_regs 0 0x1000>;
+		#hwlock-cells = <1>;
+	};
+
 	smem {
 		compatible = "qcom,smem";
 
@@ -431,7 +437,7 @@
 			qcom,ipc = <&apcs 8 0>;
 			qcom,smd-edge = <15>;
 
-			rpm_requests: smd-channel {
+			rpm_requests: rpm_requests {
 				compatible = "qcom,rpm-msm8976";
 				qcom,smd-channels = "rpm_requests";
 
@@ -447,12 +453,6 @@
 				};
 			};
 		};
-	};
-
-	tcsr_mutex: hwlock {
-		compatible = "qcom,tcsr-mutex";
-		syscon = <&tcsr_mutex_regs 0 0x1000>;
-		#hwlock-cells = <1>;
 	};
 
 	soc: soc {
