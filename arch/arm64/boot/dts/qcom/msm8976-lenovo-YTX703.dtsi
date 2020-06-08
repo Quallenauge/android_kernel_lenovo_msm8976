@@ -146,7 +146,7 @@
 	status = "ok";
 	phy-names = "usb-phy";
 	phys = <&usb_hs_phy>;
-	dr_mode = "otg";
+	dr_mode = "peripheral";
 	usb-role-switch;
 
 	ulpi {
