@@ -22,6 +22,14 @@
 		stdout-path = "serial0:115200n8";
 	};
 
+	vcc5v0_typec: vcc5v0-typec-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "vcc5v0_typec";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		regulator-always-on;
+	};
+
 	vph_pwr: vph-pwr-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vph_pwr";
@@ -124,6 +132,7 @@
 		interrupt-names = "fsc_interrupt_int_n";
 		pinctrl-names = "default";
 		pinctrl-0 = <&fusb_int>;
+		vbus-supply = <&vcc5v0_typec>;
 	};
 };
 
