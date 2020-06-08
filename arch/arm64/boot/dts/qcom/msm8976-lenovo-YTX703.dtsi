@@ -120,6 +120,85 @@
 		drive-strength = <2>; /* mA */
 		bias-pull-up;
 	};
+
+	card_detect_gpio: card_detect_gpio {
+		pins = "gpio100";
+		function = "gpio";
+
+		drive-strength = <2>;
+		bias-disable;
+		input-enable;
+	};
+
+	sdc1: sdc1 {
+		clk {
+			pins = "sdc1_clk";
+			bias-disable;
+			drive-strength = <16>; /* mA */
+		};
+
+		cmd {
+			pins = "sdc1_cmd";
+			bias-pull-up;
+			drive-strength = <10>; /* mA */
+		};
+
+		data {
+			pins = "sdc1_data";
+			bias-pull-up;
+			drive-strength = <10>; /* mA */
+		};
+
+		rclk {
+			pins = "sdc1_rclk";
+			bias-pull-down;
+		};
+	};
+
+	sdc2: sdc2 {
+		clk {
+			pins = "sdc2_clk";
+			bias-disable;
+			drive-strength = <16>; /* mA */
+		};
+
+		cmd {
+			pins = "sdc2_cmd";
+			bias-pull-up;
+			drive-strength = <10>; /* mA */
+		};
+
+		data {
+			pins = "sdc2_data";
+			bias-pull-up;
+			drive-strength = <10>; /* mA */
+		};
+	};
+
+	sdc3: sdc3 {
+		clk {
+			pins = "sdc3_clk";
+			bias-disable;
+			drive-strength = <16>; /* mA */
+		};
+
+		cmd {
+			pins = "sdc3_cmd";
+			bias-pull-up;
+			drive-strength = <10>; /* mA */
+		};
+
+		data {
+			pins = "sdc3_data";
+			bias-pull-up;
+			drive-strength = <10>; /* mA */
+		};
+
+		rclk {
+			pins = "sdc3_rclk";
+			bias-pull-down;
+		};
+	};
 };
 
 &blsp_i2c8 {
@@ -387,4 +466,31 @@
 			regulator-allow-set-load;
 		};
 	};
+};
+
+/* eMMC */
+&sdhc_1 {
+	vmmc-supply = <&pm8950_l8>;
+	vqmmc-supply = <&pm8950_l5>;
+
+	pinctrl-names = "default";
+	pinctrl-0 = <&sdc1>;
+
+	status = "okay";
+};
+
+/* MicroSD card slot */
+&sdhc_2 {
+	vmmc-supply = <&pm8950_l11>;
+	vqmmc-supply = <&pm8950_l12>;
+	/*
+	 * FIXME: Downstream kernel has a 'feature' by which it should set
+	 * GPIO_ACTIVE_LOW if bootloader sets com_board_ver < 3 in cmdline.
+	 */
+	cd-gpios = <&tlmm 100 GPIO_ACTIVE_HIGH>;
+
+	pinctrl-names = "default";
+	pinctrl-0 = <&sdc2 &card_detect_gpio>;
+
+	status = "okay";
 };
