@@ -133,6 +133,12 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&fusb_int>;
 		vbus-supply = <&vcc5v0_typec>;
+
+		port {
+			typec1_dr_sw: endpoint {
+				remote-endpoint = <&usb1_drd_sw>;
+			};
+		};
 	};
 };
 
@@ -141,6 +147,8 @@
 	phy-names = "usb-phy";
 	phys = <&usb_hs_phy>;
 	dr_mode = "otg";
+	usb-role-switch;
+
 	ulpi {
 		usb_hs_phy: phy {
 			compatible = "qcom,usb-hs-28nm-8976",
@@ -155,6 +163,12 @@
 			status = "ok";
 		};
 	};	
+
+	port {
+		usb1_drd_sw: endpoint {
+			remote-endpoint = <&typec1_dr_sw>;
+		};
+	};
 };
 
 &pm8004_lsid5 {
