@@ -44,3 +44,13 @@ pwclient git-am -3 -s -p kernel 11155395 # [5/5] regulator: qcom_spmi: Add suppo
 
 # https://patchwork.kernel.org/patch/11305491/
 pwclient git-am -3 -s -p kernel 11305491 # arm64: Add qcom Kconfig fragment
+
+# [v4,0/7] Add support for QCOM IOMMU v2 and 500
+# https://patchwork.kernel.org/cover/11169853/
+pwclient git-am -3 -s -p kernel 11169857 # [v4,1/7] firmware: qcom: scm: Add function to set IOMMU pagetable addressing
+pwclient git-am -3 -s -p kernel 11169855 # [v4,2/7] iommu/qcom: Use the asid read from device-tree if specified
+pwclient git-am -3 -s -p kernel 11169859 # [v4,3/7] iommu/qcom: Write TCR before TTBRs to fix ASID access behavior
+pwclient git-am -3 -s -p kernel 11169861 # [v4,4/7] iommu/qcom: Properly reset the IOMMU context
+pwclient git-am -3 -s -p kernel 11169863 # [v4,5/7] iommu/qcom: Add support for AArch64 IOMMU pagetables
+pwclient git-am -3 -s -p kernel 11169865 # [v4,6/7] iommu/qcom: Index contexts by asid number to allow asid 0
+pwclient git-am -3 -s -p kernel 11169867 # [v4,7/7] iommu/qcom: Add support for QCIOMMUv2 and QCIOMMU-500 secured contexts
