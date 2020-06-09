@@ -330,19 +330,24 @@ static struct iommu_domain *qcom_iommu_domain_alloc(unsigned type)
 {
 	struct qcom_iommu_domain *qcom_domain;
 
-	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
+	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA) {
+		pr_err("%s: %d\n", __func__, __LINE__);
 		return NULL;
+	}
 	/*
 	 * Allocate the domain and initialise some of its data structures.
 	 * We can't really do anything meaningful until we've added a
 	 * master.
 	 */
 	qcom_domain = kzalloc(sizeof(*qcom_domain), GFP_KERNEL);
-	if (!qcom_domain)
+	if (!qcom_domain) {
+		pr_err("%s: %d\n", __func__, __LINE__);
 		return NULL;
+	}
 
 	if (type == IOMMU_DOMAIN_DMA &&
 	    iommu_get_dma_cookie(&qcom_domain->domain)) {
+		pr_err("%s: %d\n", __func__, __LINE__);
 		kfree(qcom_domain);
 		return NULL;
 	}
