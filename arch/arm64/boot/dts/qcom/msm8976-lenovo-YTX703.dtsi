@@ -55,6 +55,41 @@
 		regulator-boot-on;
 	};
 
+	/* DSI panel power supplies */
+	dsi_vdd: dsi-vdd-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "dsi_vdd";
+		regulator-min-microvolt = <2850000>;
+		regulator-max-microvolt = <2850000>;
+		regulator-always-on;
+	};
+
+	dsi_vddio: dsi-vddio-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "dsi_vddio";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+		regulator-always-on;
+	};
+
+	dsi_lab: dsi-lab-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "dsi_lab";
+		regulator-min-microvolt = <4600000>;
+		regulator-max-microvolt = <4600000>;
+		//regulator-max-microvolt = <6000000>;
+		regulator-always-on;
+	};
+
+	dsi_ibb: dsi-ibb-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "dsi_ibb";
+		regulator-min-microvolt = <6000000>;
+		regulator-max-microvolt = <6000000>;
+		//regulator-min-microvolt = <4600000>;
+		regulator-always-on;
+	};
+
 	/* Compensate for hardware-reversed VOL-UP and VOL-DOWN buttons */
 	gpio_keys {
 		compatible = "gpio-keys";
@@ -217,6 +252,38 @@
 			bias-pull-down;
 		};
 	};
+
+#if 0
+		pmx_mdss: pmx_mdss {
+			label = "mdss-pins";
+			qcom,pin-func = <0>;
+			mdss_dsi_active: active {
+				drive-strength = <8>; /* 8 mA */
+				bias-disable = <0>; /* no pull */
+			};
+
+			mdss_dsi_suspend: suspend {
+				drive-strength = <2>; /* 2 mA */
+				bias-pull-down; /* pull down */
+			};
+		};
+
+		pmx_mdss_te: pmx_mdss_te {
+			label = "mdss-te-pin";
+			qcom,pin-func = <1>;
+			mdss_te_active: active {
+				drive-strength = <2>; /* 2 mA */
+				bias-pull-down; /* pull down */
+				input-debounce = <0>;
+			};
+
+			mdss_te_suspend: suspend {
+				drive-strength = <2>; /* 2 mA */
+				bias-pull-down; /* pull down */
+				input-debounce = <0>;
+			};
+		};
+#endif
 };
 
 &blsp_i2c8 {
@@ -511,4 +578,76 @@
 	pinctrl-0 = <&sdc2 &card_detect_gpio>;
 
 	status = "okay";
+};
+
+&dsi0 {
+	status = "okay";
+
+//	pinctrl-names = "default", "sleep";
+//	pinctrl-0 = <&mdss_dsi_active &mdss_te_active>;
+//	pinctrl-1 = <&mdss_dsi_suspend &mdss_te_suspend>;
+
+	vdda-supply = <&pm8950_l1>;
+	vddio-supply = <&pm8950_l6>;
+
+	ports {
+		port@1 {
+			endpoint {
+				remote-endpoint = <&truly_in_0>;
+				data-lanes = <0 1 2 3>;
+			};
+		};
+	};
+
+	panel@0 {
+		compatible = "truly,nt35597-2K-display";
+		reg = <0>;
+		vdda-supply = <&dsi_vddio>;
+		vdispp-supply = <&dsi_lab>;
+		vdispn-supply = <&dsi_ibb>;
+
+		reset-gpios = <&tlmm 25 GPIO_ACTIVE_HIGH>;
+		mode-gpios = <&tlmm 107 GPIO_ACTIVE_HIGH>;
+		//qcom,platform-bklight-en-gpio = <&msm_gpio 66 0>;
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@0 {
+				reg = <0>;
+				truly_in_0: endpoint {
+					remote-endpoint = <&dsi0_out>;
+				};
+			};
+
+			port@1 {
+				reg = <1>;
+				truly_in_1: endpoint {
+					remote-endpoint = <&dsi1_out>;
+				};
+			};
+		};
+	};
+};
+
+&dsi0_out {
+	remote-endpoint = <&truly_in_0>;
+};
+
+&dsi1_out {
+	remote-endpoint = <&truly_in_1>;
+};
+
+&dsi1 {
+	vdda-supply = <&pm8950_l1>;
+	vddio-supply = <&pm8950_l6>;
+};
+
+&dsi_phy0 {
+	vddio-supply = <&pm8950_l6>;
+};
+
+&dsi_phy1 {
+	vddio-supply = <&pm8950_l6>;
 };
