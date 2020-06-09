@@ -566,6 +566,8 @@ static int truly_nt35597_probe(struct mipi_dsi_device *dsi)
 		.node = NULL,
 	};
 
+	dump_stack();
+
 	ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
 
 	if (!ctx)
