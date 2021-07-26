@@ -940,6 +940,7 @@ void kgsl_sharedmem_free(struct kgsl_memdesc *memdesc)
 	if (memdesc->sgt) {
 		sg_free_table(memdesc->sgt);
 		kfree(memdesc->sgt);
+		memdesc->sgt = NULL;
 	}
 
 	memset(memdesc, 0, sizeof(*memdesc));
